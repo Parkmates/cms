@@ -64,6 +64,21 @@ class UserModels {
     
         return result[0];
     }
+
+    static async updateUser({
+        id,
+        name,
+        username,
+        email
+      }) {
+        const result = await database.collection("users").updateOne(
+          {
+            _id: new ObjectId(String(id)),
+          },
+          { $set: { name, username, email } }
+        );
+        return {result: "Success update"};
+      }
 }
 
 module.exports = UserModels
