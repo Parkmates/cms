@@ -1,6 +1,7 @@
 const { comparePass, hashPass } = require("@/helpers/bcrypt")
 const database = require("../config/mongodb")
 const { signToken } = require("@/helpers/jwt")
+const { ObjectId } = require("mongodb")
 
 class UserModels {
     static async login({ email, password }) {
@@ -24,15 +25,44 @@ class UserModels {
             role: "user",
             password: hashPass(password),
         });
-        return user
+        return { user: "success create user"}
     }
 
     static async getAll() {
-        const user = await database
-            .collection("users")
-            .find()
-            .toArray();
-        return user;
+        const agg = [
+            {
+                '$project': {
+                    'password': 0
+                }
+            }
+        ]
+
+        const user = database.collection("users");
+        const cursor = user.aggregate(agg);
+        const result = await cursor.toArray();
+        return result;
+    }
+
+    static async getById(id) {
+        const agg = [
+            {
+                '$match': { _id: new ObjectId(String(id)) }
+            },
+            {
+                '$project': {
+                    'password': 0
+                }
+            }
+        ];
+    
+        const cursor = database.collection("users").aggregate(agg);
+        const result = await cursor.toArray();
+    
+        if (result.length === 0) {
+            throw { name: "UserNotFound" };
+        }
+    
+        return result[0];
     }
 }
 
