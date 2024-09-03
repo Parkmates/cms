@@ -24,11 +24,8 @@ class ParkingSpotModels {
     imgUrl,
     motorSpot,
     carSpot,
-<<<<<<< Updated upstream
     motorFee,
     carFee,
-=======
->>>>>>> Stashed changes
   }) {
     const result = await database.collection("parkingSpots").insertOne({
       name,
@@ -36,17 +33,13 @@ class ParkingSpotModels {
       imgUrl,
       motorSpot,
       carSpot,
-<<<<<<< Updated upstream
       motorFee,
       carFee,
-=======
->>>>>>> Stashed changes
       authorId: new ObjectId(String("66d6d3d0cf201705437e09cc")),
     });
     return "Success create parking spot";
   }
-<<<<<<< Updated upstream
-
+  
   static async updateParkingSpot({
     id,
     name,
@@ -65,8 +58,16 @@ class ParkingSpotModels {
     );
     return "Success update parking spot";
   }
-=======
->>>>>>> Stashed changes
+
+
+  static async deleteParkingSpot(id) {
+    const result = await database.collection("parkingSpots").deleteOne(
+      {
+        _id: new ObjectId(String(id)),
+      }
+    )
+    return { result: "Success delete parking spot" };
+  }
 }
 
 module.exports = ParkingSpotModels;
