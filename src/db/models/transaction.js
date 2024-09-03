@@ -52,6 +52,42 @@ class TransactionModels {
 
     return "Check-In Success";
   }
+
+  static async checkOutTransaction(id) {
+    const transaction = await database.collection("transactions").updateOne(
+        {
+          $and: [
+            { _id: new ObjectId(String(id)) },
+            { userId: new ObjectId(String("66d6d3d0cf201705437e09cc")) },
+          ],
+        },
+        {
+          $set: { isActive: false },
+        }
+      );
+      console.log(transaction);
+      if (!transaction.modifiedCount) throw { name: "CheckoutFailed" };
+  
+      return "Check-Out Success";
+  }
+
+  static async cancelTransaction(id) {
+    const transaction = await database.collection("transactions").updateOne(
+        {
+          $and: [
+            { _id: new ObjectId(String(id)) },
+            { userId: new ObjectId(String("66d6d3d0cf201705437e09cc")) },
+          ],
+        },
+        {
+          $set: { isActive: false, isCheckin: false },
+        }
+      );
+      console.log(transaction);
+      if (!transaction.modifiedCount) throw { name: "CancelFailed" };
+  
+      return "Cancel Success";
+  }
 }
 
 module.exports = TransactionModels;
