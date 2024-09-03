@@ -12,12 +12,14 @@ async function GET() {
 
 async function POST(req) {
   try {
-    const { name, address, imgUrl, motorSpot, carSpot } = await req.json();
+    const { name, address, imgUrl, motorSpot, carSpot, motorFee, carFee } = await req.json();
     if (!name) throw { name: "RequiredName" };
     if (!address) throw { name: "RequiredAddress" };
     if (!imgUrl) throw { name: "RequiredImgUrl" };
     if (!motorSpot) throw { name: "RequiredMotorSpot" };
     if (!carSpot) throw { name: "RequiredCarSpot" };
+    if (!motorFee) throw { name: "RequiredMotorFee" };
+    if (!carFee) throw { name: "RequiredCarFee" };
 
     const result = await ParkingSpotModels.createParkingSpot({
       name,
@@ -25,6 +27,8 @@ async function POST(req) {
       imgUrl,
       motorSpot,
       carSpot,
+      motorFee,
+      carFee
     });
 
     return Response.json({ msg: result });
