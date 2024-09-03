@@ -25,7 +25,7 @@ class UserModels {
             role: "user",
             password: hashPass(password),
         });
-        return { user: "success create user"}
+        return { user: "success create user" }
     }
 
     static async getAll() {
@@ -54,14 +54,14 @@ class UserModels {
                 }
             }
         ];
-    
+
         const cursor = database.collection("users").aggregate(agg);
         const result = await cursor.toArray();
-    
+
         if (result.length === 0) {
             throw { name: "UserNotFound" };
         }
-    
+
         return result[0];
     }
 
@@ -70,15 +70,24 @@ class UserModels {
         name,
         username,
         email
-      }) {
+    }) {
         const result = await database.collection("users").updateOne(
-          {
-            _id: new ObjectId(String(id)),
-          },
-          { $set: { name, username, email } }
+            {
+                _id: new ObjectId(String(id)),
+            },
+            { $set: { name, username, email } }
         );
-        return {result: "Success update"};
-      }
+        return { result: "Success update" };
+    }
+
+    static async deleteUser(id) {
+        const result = await database.collection("users").deleteOne(
+            {
+                _id: new ObjectId(String(id)),
+            }
+        )
+        return { result: "Success delete" };
+    }
 }
 
 module.exports = UserModels
