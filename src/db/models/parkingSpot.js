@@ -39,7 +39,7 @@ class ParkingSpotModels {
     });
     return "Success create parking spot";
   }
-
+  
   static async updateParkingSpot({
     id,
     name,
@@ -58,6 +58,7 @@ class ParkingSpotModels {
     );
     return "Success update parking spot";
   }
+
 
   static async deleteParkingSpot(id) {
     const result = await database.collection("parkingSpots").deleteOne(

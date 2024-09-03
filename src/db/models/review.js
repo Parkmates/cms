@@ -1,3 +1,4 @@
+const { ObjectId } = require("mongodb")
 const database = require("../config/mongodb")
 
 class ReviewModels {
@@ -6,6 +7,18 @@ class ReviewModels {
             spotId
         }).toArray()
         return reviews
+    }
+
+    static async createReview({ spotId, rating, comment }) {
+        const result = await database.collection("reviews").insertOne({
+            userId: new ObjectId(String("66d6d3d0cf201705437e09cc")),
+            spotId,
+            rating, 
+            comment: comment || "",
+            createdAt: new Date()
+        })
+
+        return "Create review success"
     }
 }
 
