@@ -24,7 +24,15 @@ class UserModels {
             role: "user",
             password: hashPass(password),
         });
-        return "Success register user"
+        return user
+    }
+
+    static async getAll() {
+        const user = await database
+            .collection("users")
+            .find()
+            .toArray();
+        return user;
     }
 }
 
