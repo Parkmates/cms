@@ -47,6 +47,7 @@ async function DELETE(req, res) {
     const { id } = res.params;
 
     const result = await ParkingSpotModels.deleteParkingSpot(id)
+    
     return Response.json(result)
 } catch (error) {
     console.log(error);
