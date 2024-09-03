@@ -24,8 +24,11 @@ class ParkingSpotModels {
     imgUrl,
     motorSpot,
     carSpot,
+<<<<<<< Updated upstream
     motorFee,
     carFee,
+=======
+>>>>>>> Stashed changes
   }) {
     const result = await database.collection("parkingSpots").insertOne({
       name,
@@ -33,12 +36,16 @@ class ParkingSpotModels {
       imgUrl,
       motorSpot,
       carSpot,
+<<<<<<< Updated upstream
       motorFee,
       carFee,
+=======
+>>>>>>> Stashed changes
       authorId: new ObjectId(String("66d6d3d0cf201705437e09cc")),
     });
     return "Success create parking spot";
   }
+<<<<<<< Updated upstream
 
   static async updateParkingSpot({
     id,
@@ -58,6 +65,8 @@ class ParkingSpotModels {
     );
     return "Success update parking spot";
   }
+=======
+>>>>>>> Stashed changes
 }
 
 module.exports = ParkingSpotModels;
