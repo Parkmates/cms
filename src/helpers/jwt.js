@@ -1,15 +1,15 @@
-import jwt from "jsonwebtoken"
+const jwt = require("jsonwebtoken")
 const secret = "secret-fp"
 
-function signToken (payload: {id: string, role: string}) {
+function signToken (payload) {
     return jwt.sign(payload, secret)
 }
 
-function verifyToken (token: string) {
+function verifyToken (token) {
     return jwt.verify(token, secret)
 }
 
-export {
+module.exports = {
     signToken,
     verifyToken
 }
