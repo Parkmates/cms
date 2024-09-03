@@ -12,5 +12,5 @@ async function GET(req) {
 }
 
 module.exports = {
-    
+    GET
 }
