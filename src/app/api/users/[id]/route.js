@@ -36,7 +36,20 @@ async function PUT(req, res) {
     }
 }
 
+async function DELETE(req, res) {
+    try {
+        const { id } = res.params;
+
+        const result = await UserModels.deleteUser(id)
+        return Response.json(result)
+    } catch (error) {
+        console.log(error);
+        return Response.json(error);
+    }
+}
+
 module.exports = {
     GET,
-    PUT
+    PUT,
+    DELETE
 }
