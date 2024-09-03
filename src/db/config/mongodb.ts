@@ -1,5 +1,5 @@
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+import { MongoClient, ServerApiVersion } from 'mongodb';
 const uri = "mongodb+srv://febriantopermana16:fp160201@febh8.p4n2u.mongodb.net/?retryWrites=true&w=majority&appName=FebH8";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -13,4 +13,4 @@ const client = new MongoClient(uri, {
 
 const database = client.db("FinalProject")
 
-module.exports = database
+export default database
