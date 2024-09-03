@@ -58,6 +58,15 @@ class ParkingSpotModels {
     );
     return "Success update parking spot";
   }
+
+  static async deleteParkingSpot(id) {
+    const result = await database.collection("parkingSpots").deleteOne(
+      {
+        _id: new ObjectId(String(id)),
+      }
+    )
+    return { result: "Success delete parking spot" };
+  }
 }
 
 module.exports = ParkingSpotModels;
