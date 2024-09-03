@@ -34,6 +34,24 @@ class TransactionModels {
     });
     return "Transaction success";
   }
+
+  static async checkInTransaction(id) {
+    const transaction = await database.collection("transactions").updateOne(
+      {
+        $and: [
+          { _id: new ObjectId(String(id)) },
+          { userId: new ObjectId(String("66d6d3d0cf201705437e09cd")) },
+        ],
+      },
+      {
+        $set: { isCheckin: true },
+      }
+    );
+    console.log(transaction);
+    if (!transaction.modifiedCount) throw { name: "CheckinFailed" };
+
+    return "Check-In Success";
+  }
 }
 
 module.exports = TransactionModels;
