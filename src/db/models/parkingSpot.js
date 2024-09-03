@@ -39,6 +39,25 @@ class ParkingSpotModels {
     });
     return "Success create parking spot";
   }
+
+  static async updateParkingSpot({
+    id,
+    name,
+    address,
+    imgUrl,
+    motorSpot,
+    carSpot,
+    motorFee,
+    carFee,
+  }) {
+    const result = await database.collection("parkingSpots").updateOne(
+      {
+        _id: new ObjectId(String(id)),
+      },
+      { $set: { name, address, imgUrl, motorSpot, carSpot, motorFee, carFee } }
+    );
+    return "Success update parking spot";
+  }
 }
 
 module.exports = ParkingSpotModels;
