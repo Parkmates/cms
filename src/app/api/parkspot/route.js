@@ -6,7 +6,7 @@ async function GET() {
     return Response.json(result);
   } catch (error) {
     console.log(error);
-    Response.json(error);
+    return Response.json(error);
   }
 }
 
