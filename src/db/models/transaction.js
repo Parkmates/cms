@@ -10,7 +10,7 @@ class TransactionModels {
     return transactions;
   }
 
-  static async getById({ id, userId } {
+  static async getById({ id, userId }) {
     const transaction = await database
       .collection("transactions")
       .findOne({
