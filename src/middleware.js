@@ -56,7 +56,8 @@ export async function middleware(req) {
   // Set a new response header `x-id`
   response.headers.set("x-id", payload.id);
   response.headers.set("x-role", payload.role);
-
+  // console.log(response.headers)
+  
   return response;
 }
 

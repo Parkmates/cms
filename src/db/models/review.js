@@ -1,5 +1,6 @@
 const { ObjectId } = require("mongodb")
-const database = require("../config/mongodb")
+const database = require("../config/mongodb");
+const { z } = require("zod");
 
 class ReviewModels {
     static async getAll(spotId) {
@@ -10,6 +11,12 @@ class ReviewModels {
     }
 
     static async createReview({ spotId, rating, comment, userId }) {
+        const validation = z
+            .object({
+                rating: z.string().min(1, "is required"),
+            })
+            .safeParse({ rating });
+        if (!validation.success) throw validation.error;
         const result = await database.collection("reviews").insertOne({
             userId: new ObjectId(String(userId)),
             spotId,

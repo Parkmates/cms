@@ -6,10 +6,22 @@ async function PUT(req, res) {
     const userId = req.headers.get("x-id");
 
     const result = await TransactionModels.cancelTransaction({ id, userId });
-    return Response.json({ msg: result });
+    return Response.json({ msg: result })
   } catch (error) {
-    console.log(error);
-    return Response.json(error);
+    let msgError = error.message || "Internal server error";
+    let status = 500;
+
+    if (error.name === "CancelFailed") {
+      status = 409;
+    }
+    return Response.json(
+      {
+        msg: msgError,
+      },
+      {
+        status: status,
+      }
+    );
   }
 }
 

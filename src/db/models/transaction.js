@@ -10,27 +10,41 @@ class TransactionModels {
     return transactions;
   }
 
-  static async getById({ id, userId }) {
-    const transaction = await database.collection("transactions").findOne({
+  static async getById({ id, userId } {
+    const transaction = await database
+      .collection("transactions")
+      .findOne({
       $and: [
         { _id: new ObjectId(String(id)) },
         { userId: new ObjectId(String(userId)) },
       ],
-    });
-    if (!transaction) throw { name: "TransactionNotFound" };
+      });
+    if (!transaction) {
+      let error = new Error();
+      error.message = "transaction Not Found";
+      error.name = "NotFound"
+      throw error;
+    }
 
     return transaction;
   }
 
   static async createTransaction({ spotId, userId }) {
-    const spotValidate = await database.collection("transactions").findOne({
+    const spotValidate = await database
+      .collection("transactions")
+      .findOne({
       $and: [
         { spotId: new ObjectId(String(spotId)) },
         { userId: new ObjectId(String(userId)) },
       ],
-    });
-    if (spotValidate) throw { name: "AlreadyBookSpot" };
-
+      });
+    // if (spotValidate) throw { name: "AlreadyBookSpot" };
+    if (spotValidate) {
+      let error = new Error();
+      error.message = "Already BookSpot";
+      error.name = "AlreadyBookSpot"
+      throw error;
+    }
     const result = await database.collection("transactions").insertOne({
       userId: new ObjectId(String(userId)),
       spotId: new ObjectId(String(spotId)),
@@ -53,8 +67,13 @@ class TransactionModels {
         $set: { isCheckin: true },
       }
     );
-    if (!transaction.modifiedCount) throw { name: "CheckinFailed" };
-
+    // if (!transaction.modifiedCount) throw { name: "CheckinFailed" };
+    if (!transaction.modifiedCount) {
+      let error = new Error();
+      error.message = "Checkin Failed";
+      error.name = "CheckinFailed"
+      throw error;
+    }
     return "Check-In Success";
   }
 
@@ -70,8 +89,13 @@ class TransactionModels {
         $set: { isActive: false },
       }
     );
-    if (!transaction.modifiedCount) throw { name: "CheckoutFailed" };
-
+    // if (!transaction.modifiedCount) throw { name: "CheckoutFailed" };
+    if (!transaction.modifiedCount) {
+      let error = new Error();
+      error.message = "Checkout Failed";
+      error.name = "CheckoutFailed"
+      throw error;
+    }
     return "Check-Out Success";
   }
 
@@ -87,8 +111,13 @@ class TransactionModels {
         $set: { isActive: false, isCheckin: false },
       }
     );
-    if (!transaction.modifiedCount) throw { name: "CancelFailed" };
-
+    // if (!transaction.modifiedCount) throw { name: "CancelFailed" };
+    if (!transaction.modifiedCount) {
+      let error = new Error();
+      error.message = "Cancel Failed";
+      error.name = "CancelFailed"
+      throw error;
+    }
     return "Cancel Success";
   }
 }
