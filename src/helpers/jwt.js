@@ -1,12 +1,15 @@
 const jwt = require("jsonwebtoken")
+const jose = require("jose")
 const secret = "secret-fp"
 
 function signToken (payload) {
     return jwt.sign(payload, secret)
 }
 
-function verifyToken (token) {
-    return jwt.verify(token, secret)
+async function verifyToken (token) {
+    const secretJose = new TextEncoder().encode(secret)
+    const { payload } = await jose.jwtVerify(token, secretJose)
+    return payload
 }
 
 module.exports = {

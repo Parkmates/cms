@@ -1,5 +1,4 @@
 const UserModels = require("@/db/models/user");
-const { cookies } = require("next/headers");
 
 async function POST(req) {
   try {
@@ -9,7 +8,6 @@ async function POST(req) {
 
     const result = await UserModels.login({ email, password });
 
-    cookies().set("Authorization", "Bearer " + result);
     return Response.json({ access_token: result });
   } catch (error) {
     console.log(error);
