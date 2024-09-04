@@ -1,8 +1,11 @@
 const ParkingSpotModels = require("@/db/models/parkingSpot");
 
-async function GET() {
+async function GET(req) {
   try {
-    const result = await ParkingSpotModels.getAll();
+    const role = req.headers.get("x-role");
+    const authorId = req.headers.get("x-id");
+
+    const result = await ParkingSpotModels.getAll({ role, authorId });
     return Response.json(result);
   } catch (error) {
     console.log(error);
@@ -12,7 +15,11 @@ async function GET() {
 
 async function POST(req) {
   try {
-    const { name, address, imgUrl, motorSpot, carSpot, motorFee, carFee } = await req.json();
+    const authorId = req.headers.get("x-id");
+    const role = req.headers.get("x-role");
+
+    const { name, address, imgUrl, motorSpot, carSpot, motorFee, carFee } =
+      await req.json();
     if (!name) throw { name: "RequiredName" };
     if (!address) throw { name: "RequiredAddress" };
     if (!imgUrl) throw { name: "RequiredImgUrl" };
@@ -28,7 +35,9 @@ async function POST(req) {
       motorSpot,
       carSpot,
       motorFee,
-      carFee
+      carFee,
+      authorId,
+      role
     });
 
     return Response.json({ msg: result });

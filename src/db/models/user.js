@@ -32,7 +32,8 @@ class UserModels {
         return { user: "success create user" }
     }
 
-    static async addVendor({ name, username, email, password }) {
+    static async addVendor({ name, username, email, password, userRole }) {
+        if(userRole !== "admin") throw { name: "Unauthorized" }
         const user = await database.collection("users").insertOne({
             name,
             username,
@@ -44,7 +45,8 @@ class UserModels {
         return { user: "success create vendor" }
     }
 
-    static async getAll() {
+    static async getAll({role}) {
+        if(role !== "admin") throw { name: "Unauthorized" }
         const agg = [
             {
                 '$project': {
@@ -96,7 +98,8 @@ class UserModels {
         return { result: "Success update" };
     }
 
-    static async deleteUser(id) {
+    static async deleteUser({id, role}) {
+        if (role !== "admin") throw { name: "Unauthorized" }
         const result = await database.collection("users").deleteOne(
             {
                 _id: new ObjectId(String(id)),

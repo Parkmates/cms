@@ -2,31 +2,37 @@ const { ObjectId } = require("mongodb");
 const database = require("../config/mongodb");
 
 class TransactionModels {
-  static async getAll() {
+  static async getAll(userId) {
     const transactions = await database
       .collection("transactions")
-      .find()
+      .find({ userId: new ObjectId(String(userId)) })
       .toArray();
     return transactions;
   }
 
-  static async getById(id) {
-    const transaction = await database
-      .collection("transactions")
-      .findOne({ _id: new ObjectId(String(id)) });
+  static async getById({ id, userId }) {
+    const transaction = await database.collection("transactions").findOne({
+      $and: [
+        { _id: new ObjectId(String(id)) },
+        { userId: new ObjectId(String(userId)) },
+      ],
+    });
     if (!transaction) throw { name: "TransactionNotFound" };
 
     return transaction;
   }
 
-  static async createTransaction({ spotId }) {
-    const spotValidate = await database
-      .collection("transactions")
-      .findOne({ spotId: new ObjectId(String(spotId)) });
+  static async createTransaction({ spotId, userId }) {
+    const spotValidate = await database.collection("transactions").findOne({
+      $and: [
+        { spotId: new ObjectId(String(spotId)) },
+        { userId: new ObjectId(String(userId)) },
+      ],
+    });
     if (spotValidate) throw { name: "AlreadyBookSpot" };
 
     const result = await database.collection("transactions").insertOne({
-      userId: new ObjectId("66d6d3d0cf201705437e09cc"),
+      userId: new ObjectId(String(userId)),
       spotId: new ObjectId(String(spotId)),
       isActive: true,
       isCheckin: false,
@@ -35,58 +41,55 @@ class TransactionModels {
     return "Transaction success";
   }
 
-  static async checkInTransaction(id) {
+  static async checkInTransaction({ id, userId }) {
     const transaction = await database.collection("transactions").updateOne(
       {
         $and: [
           { _id: new ObjectId(String(id)) },
-          { userId: new ObjectId(String("66d6d3d0cf201705437e09cd")) },
+          { userId: new ObjectId(String(userId)) },
         ],
       },
       {
         $set: { isCheckin: true },
       }
     );
-    console.log(transaction);
     if (!transaction.modifiedCount) throw { name: "CheckinFailed" };
 
     return "Check-In Success";
   }
 
-  static async checkOutTransaction(id) {
+  static async checkOutTransaction({ id, userId }) {
     const transaction = await database.collection("transactions").updateOne(
-        {
-          $and: [
-            { _id: new ObjectId(String(id)) },
-            { userId: new ObjectId(String("66d6d3d0cf201705437e09cc")) },
-          ],
-        },
-        {
-          $set: { isActive: false },
-        }
-      );
-      console.log(transaction);
-      if (!transaction.modifiedCount) throw { name: "CheckoutFailed" };
-  
-      return "Check-Out Success";
+      {
+        $and: [
+          { _id: new ObjectId(String(id)) },
+          { userId: new ObjectId(String(userId)) },
+        ],
+      },
+      {
+        $set: { isActive: false },
+      }
+    );
+    if (!transaction.modifiedCount) throw { name: "CheckoutFailed" };
+
+    return "Check-Out Success";
   }
 
-  static async cancelTransaction(id) {
+  static async cancelTransaction({ id, userId }) {
     const transaction = await database.collection("transactions").updateOne(
-        {
-          $and: [
-            { _id: new ObjectId(String(id)) },
-            { userId: new ObjectId(String("66d6d3d0cf201705437e09cc")) },
-          ],
-        },
-        {
-          $set: { isActive: false, isCheckin: false },
-        }
-      );
-      console.log(transaction);
-      if (!transaction.modifiedCount) throw { name: "CancelFailed" };
-  
-      return "Cancel Success";
+      {
+        $and: [
+          { _id: new ObjectId(String(id)) },
+          { userId: new ObjectId(String(userId)) },
+        ],
+      },
+      {
+        $set: { isActive: false, isCheckin: false },
+      }
+    );
+    if (!transaction.modifiedCount) throw { name: "CancelFailed" };
+
+    return "Cancel Success";
   }
 }
 

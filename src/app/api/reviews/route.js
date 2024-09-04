@@ -15,10 +15,11 @@ async function GET(req) {
 
 async function POST(req) {
   try {
+    const userId = req.headers.get("x-id")
     const { spotId, rating, comment } = await req.json();
     if(!rating) throw { name: "RatingRequired"}
 
-    const result = await ReviewModels.createReview({ spotId, rating, comment });
+    const result = await ReviewModels.createReview({ spotId, rating, comment, userId });
     
     return Response.json({ msg: result});
   } catch (error) {

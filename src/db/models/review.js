@@ -9,9 +9,9 @@ class ReviewModels {
         return reviews
     }
 
-    static async createReview({ spotId, rating, comment }) {
+    static async createReview({ spotId, rating, comment, userId }) {
         const result = await database.collection("reviews").insertOne({
-            userId: new ObjectId(String("66d6d3d0cf201705437e09cc")),
+            userId: new ObjectId(String(userId)),
             spotId,
             rating, 
             comment: comment || "",
