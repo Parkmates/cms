@@ -4,7 +4,10 @@ const { z } = require("zod");
 async function GET(req, res) {
   try {
     const { id } = res.params;
-    const result = await ParkingSpotModels.getById(id);
+    const authorId = req.headers.get("x-id");
+    const role = req.headers.get("x-role");
+
+    const result = await ParkingSpotModels.getById({ id, authorId, role });
     return Response.json(result);
   } catch (error) {
     console.log(error);
@@ -15,6 +18,8 @@ async function GET(req, res) {
 async function PUT(req, res) {
   try {
     const { id } = res.params;
+    const role = req.headers.get("x-role");
+
     const { name, address, imgUrl, motorSpot, carSpot, motorFee, carFee } =
       await req.json();
 
@@ -27,9 +32,10 @@ async function PUT(req, res) {
       carSpot,
       motorFee,
       carFee,
+      role
     });
 
-    return Response.json({ msg: result })
+    return Response.json({ msg: result });
   } catch (error) {
     let msgError = error.message || "Internal server error";
     let status = 500;
@@ -52,10 +58,12 @@ async function PUT(req, res) {
 async function DELETE(req, res) {
   try {
     const { id } = res.params;
+    const authorId = req.headers.get("x-id");
+    const role = req.headers.get("x-role");
 
-    const result = await ParkingSpotModels.deleteParkingSpot(id)
+    const result = await ParkingSpotModels.deleteParkingSpot({id, authorId, role});
 
-    return Response.json(result)
+    return Response.json(result);
   } catch (error) {
     console.log(error);
     return Response.json(error);
@@ -65,5 +73,5 @@ async function DELETE(req, res) {
 module.exports = {
   GET,
   PUT,
-  DELETE
+  DELETE,
 };

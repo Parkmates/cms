@@ -2,7 +2,8 @@ const TransactionModels = require("@/db/models/transaction");
 
 async function GET() {
   try {
-    const result = await TransactionModels.getAll();
+    const userId = req.headers.get("x-id");
+    const result = await TransactionModels.getAll(userId);
     return Response.json(result);
   } catch (error) {
     console.log(error);
@@ -15,9 +16,14 @@ async function POST(req) {
     const { spotId } = await req.json();
     // if (!spotId) throw { name: "ParkingSpotNotFound" };
 
-    const result = await TransactionModels.createTransaction({ spotId });
+    const userId = req.headers.get("x-id");
 
-    return Response.json({ msg: result })
+    const result = await TransactionModels.createTransaction({
+      spotId,
+      userId,
+    });
+
+    return Response.json({ msg: result });
   } catch (error) {
     let msgError = error.message || "Internal server error";
     let status = 500;
