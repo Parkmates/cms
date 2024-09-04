@@ -20,16 +20,28 @@ class UserModels {
         return token
     }
 
-    static async register({ name, username, email, password, role }) {
+    static async register({ name, username, email, password }) {
         const user = await database.collection("users").insertOne({
             name,
             username,
             email,
-            role: role || "user",
+            role: "user",
             password: hashPass(password),
         });
         
         return { user: "success create user" }
+    }
+
+    static async addVendor({ name, username, email, password }) {
+        const user = await database.collection("users").insertOne({
+            name,
+            username,
+            email,
+            role: "vendor",
+            password: hashPass(password),
+        });
+        
+        return { user: "success create vendor" }
     }
 
     static async getAll() {
