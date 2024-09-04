@@ -2,6 +2,7 @@ const { comparePass, hashPass } = require("@/helpers/bcrypt")
 const database = require("../config/mongodb")
 const { signToken } = require("@/helpers/jwt")
 const { ObjectId } = require("mongodb")
+const { cookies } = require("next/headers")
 
 class UserModels {
     static async login({ email, password }) {
@@ -14,6 +15,8 @@ class UserModels {
         if (!checkPass) throw { name: "WrongPass" }
 
         const token = signToken({ id: String(user._id), role: user.role })
+        cookies().set("Authorization", "Bearer " + token);
+
         return token
     }
 
@@ -25,7 +28,20 @@ class UserModels {
             role: "user",
             password: hashPass(password),
         });
+        
         return { user: "success create user" }
+    }
+
+    static async addVendor({ name, username, email, password }) {
+        const user = await database.collection("users").insertOne({
+            name,
+            username,
+            email,
+            role: "vendor",
+            password: hashPass(password),
+        });
+        
+        return { user: "success create vendor" }
     }
 
     static async getAll() {

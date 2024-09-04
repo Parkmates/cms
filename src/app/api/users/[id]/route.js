@@ -1,5 +1,4 @@
 const UserModels = require("@/db/models/user")
-const { ObjectId } = require("mongodb")
 
 
 async function GET(req, res) {
