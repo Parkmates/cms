@@ -134,7 +134,10 @@ class UserModels {
         const result = await cursor.toArray();
 
         if (result.length === 0) {
-            throw { name: "UserNotFound" };
+            let error = new Error();
+            error.message = "User Not Found";
+            error.name = "NotFound"
+            throw error;
         }
 
         return result[0];
