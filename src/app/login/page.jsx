@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-// import { toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 export default function Login() {
   const router = useRouter();
@@ -43,7 +43,7 @@ export default function Login() {
       router.push("/");
     } catch (error) {
       setIsLoading(false);
-      //   toast.error(error.msg);
+      toast.error(error.msg);
       console.log(error.msg);
     }
   };
