@@ -2,8 +2,8 @@
 import { useState } from "react";
 import AuthLayout from "../layouts/Auth";
 import { Button, Input } from "@nextui-org/react";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 // import { toast } from "react-toastify";
@@ -77,10 +77,10 @@ export default function Login() {
                     onClick={toggleVisibility}
                     aria-label="toggle password visibility"
                   >
-                    {/* <FontAwesomeIcon
+                    <FontAwesomeIcon
                       icon={isVisible ? faEye : faEyeSlash}
                       className="text-default-400"
-                    /> */}
+                    />
                   </button>
                 }
                 type={isVisible ? "text" : "password"}
