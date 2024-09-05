@@ -97,12 +97,6 @@ export default function Login() {
               >
                 Log in
               </Button>
-              <p>
-                Don&apos;t have an account? {""}
-                <Link href="/register" className="underline">
-                  Sign up
-                </Link>
-              </p>
             </div>
           </form>
         </div>

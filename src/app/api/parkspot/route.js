@@ -38,7 +38,7 @@ async function POST(req) {
       motorFee,
       carFee,
       authorId,
-      role
+      role,
     });
 
     return Response.json({ msg: result });
