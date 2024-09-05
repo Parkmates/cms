@@ -4,16 +4,18 @@ import AuthLayout from "../layouts/Auth";
 import { Button, Input } from "@nextui-org/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { toast } from "react-toastify";
 
-export default function Login() {
+export default function Register() {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
+    name: "",
+    username: "",
     email: "",
     password: "",
   });
@@ -31,16 +33,17 @@ export default function Login() {
     try {
       console.log(formData);
       setIsLoading(true);
-      const response = await fetch("api/login", {
+      const response = await fetch("/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
-      if (!response.ok) throw await response.json();
+
       setIsLoading(false);
-      router.push("/home");
+      if (!response.ok) throw await response.json();
+      router.push("/login");
     } catch (error) {
       setIsLoading(false);
       toast.error(error.msg);
@@ -51,9 +54,30 @@ export default function Login() {
     <>
       <AuthLayout>
         <div className="flex flex-col gap-10">
-          <h1 className="text-3xl">Welcome Back!</h1>
+          <h1 className="text-3xl">Create a new account</h1>
           <form onSubmit={(e) => handleSubmit(e)}>
             <div className="flex flex-col gap-5">
+              <Input
+                variant="bordered"
+                type="text"
+                label="Name"
+                placeholder="Enter your name"
+                className="max-w-xl"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+              />
+              <Input
+                isRequired
+                variant="bordered"
+                type="text"
+                label="Username"
+                placeholder="Enter your username"
+                className="max-w-xl"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+              />
               <Input
                 isRequired
                 variant="bordered"
@@ -95,12 +119,12 @@ export default function Login() {
                 variant="flat"
                 type="submit"
               >
-                Log in
+                Sign in
               </Button>
               <p>
-                Don&apos;t have an account? {""}
-                <Link href="/register" className="underline">
-                  Sign up
+                already have an account? {""}
+                <Link href="/login" className="underline">
+                  Login
                 </Link>
               </p>
             </div>
