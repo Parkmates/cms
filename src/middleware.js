@@ -6,20 +6,20 @@ export async function middleware(req) {
   const cookie = cookies().get("Authorization");
   console.log("middleware");
 
-  //   if (req.nextUrl.pathname.startsWith("/")) {
-  //     if (!cookie) {
-  //       return NextResponse.redirect(new URL("/login", req.url));
-  //     }
-  //   }
+  if (req.nextUrl.pathname.startsWith("/")) {
+    if (!cookie) {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+  }
 
-  //   if (
-  //     req.nextUrl.pathname.startsWith("/login") ||
-  //     req.nextUrl.pathname.startsWith("/register")
-  //   ) {
-  //     if (cookie) {
-  //       return NextResponse.redirect(new URL("/", req.url));
-  //     }
-  //   }
+  if (
+    req.nextUrl.pathname.startsWith("/login") ||
+    req.nextUrl.pathname.startsWith("/register")
+  ) {
+    if (cookie) {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+  }
 
   if (!cookie) {
     return Response.json(
@@ -57,7 +57,7 @@ export async function middleware(req) {
   response.headers.set("x-id", payload.id);
   response.headers.set("x-role", payload.role);
   // console.log(response.headers)
-  
+
   return response;
 }
 
@@ -67,5 +67,7 @@ export const config = {
     "/api/reviews",
     "/api/users/:path*",
     "/api/trx/:path*",
+    "/login",
+    "/register",
   ],
 };
