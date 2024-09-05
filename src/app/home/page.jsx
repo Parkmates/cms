@@ -32,15 +32,27 @@ export default function ListMyRecipe() {
         <div className="flex flex-col gap-4 my-2">
           <div className="flex justify-between items-center my-5">
             <h1 className="text-3xl">Parking Spot List</h1>
-            <Button
-              className="bg-black text-white"
-              variant="flat"
-              startContent={
-                <FontAwesomeIcon icon={fas.faPlus} size="lg" color="white" />
-              }
-            >
-              Add Parking Spot
-            </Button>
+            <div className="flex items-center gap-2">
+              {/* kalo role === admin */}
+              <Button
+                className="bg-black text-white"
+                variant="flat"
+                startContent={
+                  <FontAwesomeIcon icon={fas.faPlus} size="lg" color="white" />
+                }
+              >
+                Add Vendor
+              </Button>
+              <Button
+                className="bg-black text-white"
+                variant="flat"
+                startContent={
+                  <FontAwesomeIcon icon={fas.faPlus} size="lg" color="white" />
+                }
+              >
+                Add Parking Spot
+              </Button>
+            </div>
           </div>
           <Table aria-label="Example static collection table">
             <TableHeader>
