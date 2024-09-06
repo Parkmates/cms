@@ -23,8 +23,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { deleteCookie } from "../actions";
+import { useRouter } from "next/navigation";
 
 export default function HomePage() {
+  const router = useRouter();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const {
     isOpen: isOpenAddParking,
@@ -205,6 +208,17 @@ export default function HomePage() {
   return (
     <>
       <div className="p-4 md:px-12 md:py-7 md:mx-9 h-screen">
+        <Button
+          onPress={async () => {
+            await deleteCookie();
+            router.push("/login");
+          }}
+          className="mr-4"
+          color="danger"
+          variant="flat"
+        >
+          Logout
+        </Button>
         <Tabs aria-label="Options">
           <Tab key="parkingList" title="Parking Spot List">
             <div className="flex flex-col gap-4 my-2">
