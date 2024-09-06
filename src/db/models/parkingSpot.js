@@ -144,7 +144,15 @@ class ParkingSpotModels {
     return { result: "Success delete parking spot" };
   }
 
-  static async createSpotDetail({ type, quantity, fee, floor, area, id, role }) {
+  static async createSpotDetail({
+    type,
+    quantity,
+    fee,
+    floor,
+    area,
+    id,
+    role,
+  }) {
     if (role === "user") {
       let error = new Error();
       error.message = "Unauthorized";
@@ -157,10 +165,39 @@ class ParkingSpotModels {
       quantity,
       fee,
       floor,
-      area
-    })
+      area,
+    });
 
-    return "Success create spot detail"
+    return "Success create spot detail";
+  }
+
+  static async updateSpotDetail({
+    type,
+    quantity,
+    fee,
+    floor,
+    area,
+    id,
+    spotDetailId,
+    role,
+  }) {
+    if (role === "user") {
+      let error = new Error();
+      error.message = "Unauthorized";
+      error.name = "unauthorized";
+      throw error;
+    }
+    const result = await database.collection("spotDetails").updateOne(
+      {
+        $and: [
+          { _id: new ObjectId(String(spotDetailId)) },
+          { parkingSpotId: new ObjectId(String(id)) },
+        ],
+      },
+      { $set: { type, quantity, fee, floor, area } }
+    );
+
+    return "Success update spot detail";
   }
 }
 
