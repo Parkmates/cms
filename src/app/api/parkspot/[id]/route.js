@@ -1,4 +1,5 @@
 const ParkingSpotModels = require("@/db/models/parkingSpot");
+const { cookies } = require("next/headers");
 const { z } = require("zod");
 
 async function GET(req, res) {
@@ -87,8 +88,24 @@ async function DELETE(req, res) {
   }
 }
 
+async function POST(req, res) {
+  try {
+    const { id } = res.params
+    const role = req.headers.get("x-role")
+    const { type, quantity, fee, floor, area } = await req.json()
+    
+    const result = await ParkingSpotModels.createSpotDetail({ type, quantity, fee, floor, area, id, role })
+
+    return Response.json(result)
+  } catch (error) {
+    console.log(error)
+    return Response.json(error)
+  }
+}
+
 module.exports = {
   GET,
   PUT,
   DELETE,
+  POST
 };
