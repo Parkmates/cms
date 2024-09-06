@@ -32,6 +32,7 @@ export default function HomePage() {
   } = useDisclosure();
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [action, setAction] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     username: "",
@@ -55,6 +56,24 @@ export default function HomePage() {
   useEffect(() => {
     getData();
   }, []);
+
+  const resetForm = () => {
+    console.log("reset form");
+
+    setParking({
+      name: "",
+      address: "",
+      imgUrl: "",
+      motorSpot: "",
+      carSpot: "",
+      motorFee: "",
+      carFee: "",
+    });
+  };
+
+  useEffect(() => {
+    resetForm();
+  }, [action]);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -102,11 +121,53 @@ export default function HomePage() {
         body: JSON.stringify(parking),
       });
       if (!response.ok) throw await response.json();
+
+      // reset form
+      parking.name = "";
+      parking.address = "";
+      parking.imgUrl = "";
+      parking.motorSpot = "";
+      parking.carSpot = "";
+      parking.motorFee = "";
+      parking.carFee = "";
       await getData();
       setIsLoading(false);
+      await toast.success("Success add parking spot");
       onOpenAddParkingChange(false);
     } catch (error) {
       setIsLoading(false);
+      toast.error(error.msg);
+    }
+  };
+  const handleUpdateParking = async (e) => {
+    e.preventDefault();
+    try {
+      setIsLoading(true);
+      const response = await fetch(`/api/parkspot/${parking._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(parking),
+      });
+      if (!response.ok) throw await response.json();
+      await getData();
+      setIsLoading(false);
+      await toast.success("Success add parking spot");
+      onOpenAddParkingChange(false);
+    } catch (error) {
+      setIsLoading(false);
+      toast.error(error.msg);
+    }
+  };
+  const handleDetail = async (id) => {
+    try {
+      const response = await fetch(`/api/parkspot/${id}`);
+      const data = await response.json();
+      setParking(data);
+      onOpenAddParkingChange(true);
+      if (!response.ok) throw await response.json();
+    } catch (error) {
       toast.error(error.msg);
     }
   };
@@ -129,7 +190,10 @@ export default function HomePage() {
                 Add Vendor
               </Button>
               <Button
-                onPress={onOpenAddParking}
+                onPress={() => {
+                  onOpenAddParking();
+                  setAction("add");
+                }}
                 className="bg-black text-white"
                 variant="flat"
                 startContent={
@@ -164,7 +228,10 @@ export default function HomePage() {
                   <TableCell>{item.carSpot}</TableCell>
                   <TableCell>
                     <Button
-                      onPress={() => console.log(`Edit ${item._id}`)}
+                      onPress={() => {
+                        setAction("edit");
+                        handleDetail(item._id);
+                      }}
                       isIconOnly
                       className="bg-black text-white"
                       variant="flat"
@@ -259,7 +326,7 @@ export default function HomePage() {
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Add parking spot
+                {action === "add" ? "Add" : "Edit"} parking spot
               </ModalHeader>
               <ModalBody>
                 <Input
@@ -336,15 +403,27 @@ export default function HomePage() {
                 <Button color="danger" variant="light" onPress={onClose}>
                   Close
                 </Button>
-                <Button
-                  type="submit"
-                  className="bg-black text-white"
-                  variant="flat"
-                  onClick={(e) => handleAddParking(e)}
-                  isLoading={isLoading}
-                >
-                  submit
-                </Button>
+                {action === "add" ? (
+                  <Button
+                    type="submit"
+                    className="bg-black text-white"
+                    variant="flat"
+                    onClick={(e) => handleAddParking(e)}
+                    isLoading={isLoading}
+                  >
+                    submit
+                  </Button>
+                ) : (
+                  <Button
+                    type="submit"
+                    className="bg-black text-white"
+                    variant="flat"
+                    onClick={(e) => handleUpdateParking(e)}
+                    isLoading={isLoading}
+                  >
+                    update
+                  </Button>
+                )}
               </ModalFooter>
             </>
           )}
