@@ -6,27 +6,23 @@ export async function middleware(req) {
   const cookie = cookies().get("Authorization");
   // console.log("middleware");
   // console.log("cookie", cookie);
-  if (
-    req.nextUrl.pathname.startsWith("/login") ||
-    req.nextUrl.pathname.startsWith("/register")
-  ) {
+  if (req.nextUrl.pathname.startsWith("/login")) {
     if (cookie) {
-      // console.log("user udah login");
       return NextResponse.redirect(new URL("/", req.url));
     }
   }
 
   if (req.nextUrl.pathname.startsWith("/home")) {
     if (!cookie) {
-      // console.log("user belom login");
       return NextResponse.redirect(new URL("/login", req.url));
     }
   }
 
   if (
-    req.nextUrl.pathname.startsWith(
-      "/api/parkspot" || "/api/users" || "/api/trx" || "/api/reviews"
-    )
+    req.nextUrl.pathname.startsWith("/api/parkspot") ||
+    req.nextUrl.pathname.startsWith("/api/users") ||
+    req.nextUrl.pathname.startsWith("/api/trx") ||
+    req.nextUrl.pathname.startsWith("/api/reviews")
   ) {
     if (!cookie) {
       return Response.json(
