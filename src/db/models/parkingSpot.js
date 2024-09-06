@@ -4,10 +4,12 @@ const { ObjectId } = require("mongodb");
 
 class ParkingSpotModels {
   static async getAll({ role, authorId }) {
+    console.log(role, authorId, "<<<<<");
+
     let opt = {};
     if (role === "vendor") {
       opt = {
-        authorId,
+        authorId: new ObjectId(String(authorId)),
       };
     }
 
