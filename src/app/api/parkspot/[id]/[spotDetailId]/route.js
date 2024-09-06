@@ -19,8 +19,24 @@ async function PUT(req, res) {
 
     return Response.json(result);
   } catch (error) {
-    console.log(error);
-    return Response.json(error);
+    let msgError = error.message || "Internal server error";
+    let status = 500;
+
+    if (error instanceof z.ZodError) {
+      msgError = error.errors[0].path[0] + " " + error.errors[0].message;
+      status = 400;
+    }
+    if (error.name === "Unauthorized") {
+      status = 404
+    }
+    return Response.json(
+      {
+        msg: msgError,
+      },
+      {
+        status: status,
+      }
+    );
   }
 }
 
@@ -37,8 +53,24 @@ async function DELETE(req, res) {
 
     return Response.json(result)
   } catch (error) {
-    console.log(error);
-    return Response.json(error);
+    let msgError = error.message || "Internal server error";
+    let status = 500;
+
+    if (error instanceof z.ZodError) {
+      msgError = error.errors[0].path[0] + " " + error.errors[0].message;
+      status = 400;
+    }
+    if (error.name === "Unauthorized") {
+      status = 404
+    }
+    return Response.json(
+      {
+        msg: msgError,
+      },
+      {
+        status: status,
+      }
+    );
   }
 }
 

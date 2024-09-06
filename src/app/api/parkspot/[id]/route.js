@@ -10,8 +10,21 @@ async function GET(req, res) {
     const result = await ParkingSpotModels.getById({ id, authorId, role });
     return Response.json(result);
   } catch (error) {
-    console.log(error);
-    return Response.json(error);
+    let msgError = error.message || "Internal server error";
+    let status = 500;
+
+    if (error instanceof z.ZodError) {
+      msgError = error.errors[0].path[0] + " " + error.errors[0].message;
+      status = 400;
+    }
+    return Response.json(
+      {
+        msg: msgError,
+      },
+      {
+        status: status,
+      }
+    );
   }
 }
 
@@ -43,6 +56,9 @@ async function PUT(req, res) {
     if (error instanceof z.ZodError) {
       msgError = error.errors[0].path[0] + " " + error.errors[0].message;
       status = 400;
+    }
+    if (error.name === "unauthorized") {
+      status = 401
     }
     return Response.json(
       {
@@ -76,6 +92,9 @@ async function DELETE(req, res) {
       msgError = error.errors[0].path[0] + " " + error.errors[0].message;
       status = 400;
     }
+    if (error.name === "unauthorized") {
+      status = 401
+    }
     return Response.json(
       {
         msg: msgError,
@@ -92,13 +111,29 @@ async function POST(req, res) {
     const { id } = res.params
     const role = req.headers.get("x-role")
     const { type, quantity, fee, floor, area } = await req.json()
-    
+
     const result = await ParkingSpotModels.createSpotDetail({ type, quantity, fee, floor, area, id, role })
 
     return Response.json(result)
   } catch (error) {
-    console.log(error)
-    return Response.json(error)
+    let msgError = error.message || "Internal server error";
+    let status = 500;
+
+    if (error instanceof z.ZodError) {
+      msgError = error.errors[0].path[0] + " " + error.errors[0].message;
+      status = 400;
+    }
+    if (error.name === "unauthorized") {
+      status = 404
+    }
+    return Response.json(
+      {
+        msg: msgError,
+      },
+      {
+        status: status,
+      }
+    );
   }
 }
 
