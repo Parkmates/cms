@@ -41,7 +41,7 @@ class ParkingSpotModels {
     role,
   }) {
     if (role !== "vendor")
-      throw { name: "Your account unauthorized to create parking spot" };
+      throw { name: "Your dont have permission to create parking spot" };
     const validation = z
       .object({
         name: z.string().min(1, "is required"),
@@ -62,7 +62,7 @@ class ParkingSpotModels {
         carFee,
       });
     if (!validation.success) throw validation.error;
-    const result = await database.collection("parkingSpots").insertOne({
+    await database.collection("parkingSpots").insertOne({
       name,
       address,
       imgUrl,
