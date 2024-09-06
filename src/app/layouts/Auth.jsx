@@ -10,7 +10,7 @@ export default function AuthLayout({ children }) {
             height="100%"
             className="object-cover rounded-none"
             alt="NextUI hero Image"
-            src="https://nextui-docs-v2.vercel.app/images/fruit-1.jpeg"
+            src="/1.jpg"
             style={{ height: "100vh" }}
           />
         </div>

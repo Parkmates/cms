@@ -109,8 +109,13 @@ class UserModels {
     return { user: "success create vendor" };
   }
 
-  static async getAll({ role }) {
-    if (role !== "admin") throw { name: "Unauthorized" };
+  static async getAll({ currentUserrole, role }) {
+    if (currentUserrole !== "admin") {
+      let error = new Error();
+      error.message = "Unauthorized";
+      error.name = "unauthorized";
+      throw error;
+    }
     const agg = [
       {
         $project: {
@@ -118,6 +123,14 @@ class UserModels {
         },
       },
     ];
+
+    if (role) {
+      agg.push({
+        $match: {
+          role: role,
+        },
+      });
+    }
 
     const user = database.collection("users");
     const cursor = user.aggregate(agg);
