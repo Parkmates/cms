@@ -247,15 +247,15 @@ export default function HomePage() {
               <Table aria-label="Example static collection table">
                 <TableHeader>
                   <TableColumn>NAME</TableColumn>
+                  <TableColumn>ADDRESS</TableColumn>
                   <TableColumn>IMAGE</TableColumn>
-                  <TableColumn>MOTOR SPOT</TableColumn>
-                  <TableColumn>CAR SPOT</TableColumn>
                   <TableColumn>ACTIONS</TableColumn>
                 </TableHeader>
                 <TableBody>
                   {data.map((item) => (
                     <TableRow key={item._id}>
                       <TableCell>{item.name}</TableCell>
+                      <TableCell>{item.address}</TableCell>
                       <TableCell>
                         <Image
                           isZoomed
@@ -264,8 +264,6 @@ export default function HomePage() {
                           alt={item.name}
                         />
                       </TableCell>
-                      <TableCell>{item.motorSpot}</TableCell>
-                      <TableCell>{item.carSpot}</TableCell>
                       <TableCell className="space-x-2">
                         <Button
                           onPress={() => {
@@ -572,46 +570,6 @@ export default function HomePage() {
                   name="imgUrl"
                   onChange={handleChangeParking}
                   value={parking.imgUrl}
-                />
-                <Input
-                  isRequired
-                  label="Motor Spot"
-                  placeholder="Enter your motorSpot"
-                  type="number"
-                  variant="bordered"
-                  name="motorSpot"
-                  onChange={handleChangeParking}
-                  value={parking.motorSpot}
-                />
-                <Input
-                  isRequired
-                  label="Motor Fee"
-                  placeholder="Enter your motorFee"
-                  type="number"
-                  variant="bordered"
-                  name="motorFee"
-                  onChange={handleChangeParking}
-                  value={parking.motorFee}
-                />
-                <Input
-                  isRequired
-                  label="Car Spot"
-                  placeholder="Enter your carSpot"
-                  type="number"
-                  variant="bordered"
-                  name="carSpot"
-                  onChange={handleChangeParking}
-                  value={parking.carSpot}
-                />
-                <Input
-                  isRequired
-                  label="Car Fee"
-                  placeholder="Enter your carFee"
-                  type="number"
-                  variant="bordered"
-                  name="carFee"
-                  onChange={handleChangeParking}
-                  value={parking.carFee}
                 />
               </ModalBody>
               <ModalFooter>
