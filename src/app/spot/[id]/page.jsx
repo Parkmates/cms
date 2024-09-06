@@ -7,7 +7,6 @@ import {
   TableRow,
   TableCell,
   Button,
-  Image,
   useDisclosure,
   Modal,
   ModalContent,
@@ -15,9 +14,6 @@ import {
   ModalBody,
   ModalFooter,
   Input,
-  Textarea,
-  Tabs,
-  Tab,
 } from "@nextui-org/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fas } from "@fortawesome/free-solid-svg-icons";
@@ -28,7 +24,6 @@ import { deleteCookie } from "@/app/actions";
 
 export default function ParkingPage({ params }) {
   const router = useRouter();
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const {
     isOpen: isOpenAddParking,
     onOpen: onOpenAddParking,
@@ -108,17 +103,20 @@ export default function ParkingPage({ params }) {
     e.preventDefault();
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/parkspot/${parking._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(parking),
-      });
+      const response = await fetch(
+        `/api/parkspot/${params.id}/${parking._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(parking),
+        }
+      );
       if (!response.ok) throw await response.json();
       await getData();
       setIsLoading(false);
-      await toast.success("Success add parking spot");
+      await toast.success("Success update parking spot");
       onOpenAddParkingChange(false);
     } catch (error) {
       setIsLoading(false);
@@ -127,7 +125,7 @@ export default function ParkingPage({ params }) {
   };
   const handleDetail = async (id) => {
     try {
-      const response = await fetch(`/api/parkspot/${id}`);
+      const response = await fetch(`/api/parkspot/${params.id}/${id}`);
       const data = await response.json();
       setParking(data);
       onOpenAddParkingChange(true);
