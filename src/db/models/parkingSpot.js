@@ -199,6 +199,26 @@ class ParkingSpotModels {
 
     return "Success update spot detail";
   }
+
+  static async deleteSpotDetail({id,
+    spotDetailId,
+    role,}) {
+      if (role === "user") {
+        let error = new Error();
+        error.message = "Unauthorized";
+        error.name = "unauthorized";
+        throw error;
+      }
+
+      const result = await database.collection("spotDetails").deleteOne({
+        $and: [
+          { _id: new ObjectId(String(spotDetailId)) },
+          { parkingSpotId: new ObjectId(String(id)) },
+        ],
+      })
+
+      return "Success delete spot detail"
+    }
 }
 
 module.exports = ParkingSpotModels;
