@@ -156,7 +156,13 @@ class UserModels {
     return result;
   }
 
-  static async getById(id) {
+  static async getById({id, role}) {
+    if (role !== "admin") {
+        let error = new Error();
+        error.message = "Unauthorized";
+        error.name = "unauthorized";
+        throw error;
+      }
     const agg = [
       {
         $match: { _id: new ObjectId(String(id)) },
