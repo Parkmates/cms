@@ -29,7 +29,7 @@ class TransactionModels {
     return transaction;
   }
 
-  static async createTransaction({ spotId, userId }) {
+  static async createTransaction({ spotDetailId, userId }) {
     const spotValidate = await database
       .collection("transactions")
       .findOne({
@@ -47,7 +47,7 @@ class TransactionModels {
     }
     const result = await database.collection("transactions").insertOne({
       userId: new ObjectId(String(userId)),
-      spotId: new ObjectId(String(spotId)),
+      spotDetailId: new ObjectId(String(spotDetailId)),
       isActive: true,
       isCheckin: false,
       createdAt: new Date(),

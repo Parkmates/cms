@@ -13,13 +13,13 @@ async function GET() {
 
 async function POST(req) {
   try {
-    const { spotId } = await req.json();
+    const { spotDetailId } = await req.json();
     // if (!spotId) throw { name: "ParkingSpotNotFound" };
 
     const userId = req.headers.get("x-id");
 
     const result = await TransactionModels.createTransaction({
-      spotId,
+      spotDetailId,
       userId,
     });
 
