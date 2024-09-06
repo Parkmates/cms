@@ -139,7 +139,7 @@ export default function ParkingPage({ params }) {
   const handleDelete = async (id) => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/parkspot/${id}`, {
+      const response = await fetch(`/api/parkspot/${params.id}/${id}`, {
         method: "DELETE",
       });
       if (!response.ok) throw await response.json();
