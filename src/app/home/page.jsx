@@ -83,6 +83,7 @@ export default function HomePage() {
       });
       if (!response.ok) throw await response.json();
       setIsLoading(false);
+      onOpenChange(false);
     } catch (error) {
       setIsLoading(false);
       toast.error(error.msg);
@@ -101,7 +102,9 @@ export default function HomePage() {
         body: JSON.stringify(parking),
       });
       if (!response.ok) throw await response.json();
+      await getData();
       setIsLoading(false);
+      onOpenAddParkingChange(false);
     } catch (error) {
       setIsLoading(false);
       toast.error(error.msg);
