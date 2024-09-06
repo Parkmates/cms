@@ -98,6 +98,24 @@ class UserModels {
       })
       .safeParse({ name, username, email, password });
     if (!validation.success) throw validation.error;
+
+    // ? cek di db email udah ada atau belum
+    const existsEmail = await this.findByEmail(email);
+    if (existsEmail) {
+      let error = new Error();
+      error.message = "Email already exists";
+      error.name = "invalidEmail";
+      throw error;
+    }
+    // ? cek di db username udah ada atau belum
+    const existsUsername = await this.findByUsername(username);
+    if (existsUsername) {
+      let error = new Error();
+      error.message = "Username already exists";
+      error.name = "invalidUsername";
+      throw error;
+    }
+
     const user = await database.collection("users").insertOne({
       name,
       username,
