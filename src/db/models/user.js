@@ -36,7 +36,7 @@ class UserModels {
 
     const token = signToken({ id: String(user._id), role: user.role });
     cookies().set("Authorization", "Bearer " + token);
-
+    cookies().set("role", user.role);
     return token;
   }
 

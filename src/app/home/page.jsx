@@ -24,10 +24,26 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { deleteCookie } from "../actions";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 export default function HomePage() {
+  const pathname = usePathname();
   const [selected, setSelected] = useState("photos");
+  const [role, setRole] = useState("");
+
+  useEffect(() => {
+    const checkCookie = () => {
+      const cookieValue = Cookies.get("role");
+      if (cookieValue) {
+        setRole(cookieValue);
+      }
+    };
+
+    checkCookie();
+  }, [pathname]);
+  console.log(typeof role, role); // Pastikan ini mengembalikan 'string' dan bukan yang lain
+
   const router = useRouter();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const {
@@ -325,48 +341,49 @@ export default function HomePage() {
               </Table>
             </div>
           </Tab>
-          <Tab
-            key="vendorList"
-            title="
+          {role === "admin" && (
+            <Tab
+              key="vendorList"
+              title="
           Vendor List"
-          >
-            <div className="flex flex-col gap-4 my-2">
-              <div className="flex justify-between items-center my-5">
-                <h1 className="text-3xl">Vendor List</h1>
-                <div className="flex items-center gap-2">
-                  {/* kalo role === admin */}
-                  <Button
-                    onPress={onOpen}
-                    className="bg-black text-white"
-                    variant="flat"
-                    startContent={
-                      <FontAwesomeIcon
-                        icon={fas.faPlus}
-                        size="lg"
-                        color="white"
-                      />
-                    }
-                  >
-                    Add Vendor
-                  </Button>
+            >
+              <div className="flex flex-col gap-4 my-2">
+                <div className="flex justify-between items-center my-5">
+                  <h1 className="text-3xl">Vendor List</h1>
+                  <div className="flex items-center gap-2">
+                    {/* kalo role === admin */}
+                    <Button
+                      onPress={onOpen}
+                      className="bg-black text-white"
+                      variant="flat"
+                      startContent={
+                        <FontAwesomeIcon
+                          icon={fas.faPlus}
+                          size="lg"
+                          color="white"
+                        />
+                      }
+                    >
+                      Add Vendor
+                    </Button>
+                  </div>
                 </div>
-              </div>
-              <Table aria-label="Example static collection table">
-                <TableHeader>
-                  <TableColumn>NAME</TableColumn>
-                  <TableColumn>USER NAME</TableColumn>
-                  <TableColumn>EMAIL</TableColumn>
-                  <TableColumn>ROLE</TableColumn>
-                  {/* <TableColumn>ACTIONS</TableColumn> */}
-                </TableHeader>
-                <TableBody>
-                  {vendor.map((item) => (
-                    <TableRow key={item._id}>
-                      <TableCell>{item.name}</TableCell>
-                      <TableCell>{item.username}</TableCell>
-                      <TableCell>{item.email}</TableCell>
-                      <TableCell>{item.role}</TableCell>
-                      {/* <TableCell className="space-x-2">
+                <Table aria-label="Example static collection table">
+                  <TableHeader>
+                    <TableColumn>NAME</TableColumn>
+                    <TableColumn>USER NAME</TableColumn>
+                    <TableColumn>EMAIL</TableColumn>
+                    <TableColumn>ROLE</TableColumn>
+                    {/* <TableColumn>ACTIONS</TableColumn> */}
+                  </TableHeader>
+                  <TableBody>
+                    {vendor.map((item) => (
+                      <TableRow key={item._id}>
+                        <TableCell>{item.name}</TableCell>
+                        <TableCell>{item.username}</TableCell>
+                        <TableCell>{item.email}</TableCell>
+                        <TableCell>{item.role}</TableCell>
+                        {/* <TableCell className="space-x-2">
                         <Button
                           onPress={() => {
                             setAction("edit");
@@ -399,37 +416,39 @@ export default function HomePage() {
                           }
                         ></Button>
                       </TableCell> */}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </Tab>
-          <Tab
-            key="userList"
-            title="
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </Tab>
+          )}
+          {role === "admin" && (
+            <Tab
+              key="userList"
+              title="
           User List"
-          >
-            <div className="flex flex-col gap-4 my-2">
-              <div className="flex justify-between items-center my-5">
-                <h1 className="text-3xl">User List</h1>
-              </div>
-              <Table aria-label="Example static collection table">
-                <TableHeader>
-                  <TableColumn>NAME</TableColumn>
-                  <TableColumn>USER NAME</TableColumn>
-                  <TableColumn>EMAIL</TableColumn>
-                  <TableColumn>ROLE</TableColumn>
-                  {/* <TableColumn>ACTIONS</TableColumn> */}
-                </TableHeader>
-                <TableBody>
-                  {user.map((item) => (
-                    <TableRow key={item._id}>
-                      <TableCell>{item.name}</TableCell>
-                      <TableCell>{item.username}</TableCell>
-                      <TableCell>{item.email}</TableCell>
-                      <TableCell>{item.role}</TableCell>
-                      {/* <TableCell className="space-x-2">
+            >
+              <div className="flex flex-col gap-4 my-2">
+                <div className="flex justify-between items-center my-5">
+                  <h1 className="text-3xl">User List</h1>
+                </div>
+                <Table aria-label="Example static collection table">
+                  <TableHeader>
+                    <TableColumn>NAME</TableColumn>
+                    <TableColumn>USER NAME</TableColumn>
+                    <TableColumn>EMAIL</TableColumn>
+                    <TableColumn>ROLE</TableColumn>
+                    {/* <TableColumn>ACTIONS</TableColumn> */}
+                  </TableHeader>
+                  <TableBody>
+                    {user.map((item) => (
+                      <TableRow key={item._id}>
+                        <TableCell>{item.name}</TableCell>
+                        <TableCell>{item.username}</TableCell>
+                        <TableCell>{item.email}</TableCell>
+                        <TableCell>{item.role}</TableCell>
+                        {/* <TableCell className="space-x-2">
                         <Button
                           onPress={() => {
                             setAction("edit");
@@ -462,12 +481,13 @@ export default function HomePage() {
                           }
                         ></Button>
                       </TableCell> */}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </Tab>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </Tab>
+          )}
         </Tabs>
       </div>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="center">
