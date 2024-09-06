@@ -21,22 +21,11 @@ async function POST(req) {
 
     const { name, address, imgUrl, motorSpot, carSpot, motorFee, carFee } =
       await req.json();
-    // if (!name) throw { name: "RequiredName" };
-    // if (!address) throw { name: "RequiredAddress" };
-    // if (!imgUrl) throw { name: "RequiredImgUrl" };
-    // if (!motorSpot) throw { name: "RequiredMotorSpot" };
-    // if (!carSpot) throw { name: "RequiredCarSpot" };
-    // if (!motorFee) throw { name: "RequiredMotorFee" };
-    // if (!carFee) throw { name: "RequiredCarFee" };
 
     const result = await ParkingSpotModels.createParkingSpot({
       name,
       address,
       imgUrl,
-      motorSpot,
-      carSpot,
-      motorFee,
-      carFee,
       authorId,
       role,
     });
