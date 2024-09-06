@@ -19,7 +19,7 @@ async function POST(req) {
     const authorId = req.headers.get("x-id");
     const role = req.headers.get("x-role");
 
-    const { name, address, imgUrl, motorSpot, carSpot, motorFee, carFee } =
+    const { name, address, imgUrl } =
       await req.json();
 
     const result = await ParkingSpotModels.createParkingSpot({
@@ -38,6 +38,10 @@ async function POST(req) {
     if (error instanceof z.ZodError) {
       msgError = error.errors[0].path[0] + " " + error.errors[0].message;
       status = 400;
+    }
+    
+    if (error.name === "Unauthorized") {
+      status = 401
     }
     return Response.json(
       {

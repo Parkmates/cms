@@ -44,7 +44,13 @@ class ParkingSpotModels {
 
     const parkingSpot = await database.collection("parkingSpots").aggregate(agg).toArray();
 
-    if (!parkingSpot) throw { name: "ParkingSpotNotFound" };
+    // if (!parkingSpot) throw { name: "ParkingSpotNotFound" };
+    if (!parkingSpot) {
+      let error = new Error();
+      error.message = "Parking Spot NotFound";
+      error.name = "NotFound";
+      throw error;
+    }
     return parkingSpot[0];
   }
 
