@@ -27,6 +27,7 @@ import { deleteCookie } from "../actions";
 import { useRouter } from "next/navigation";
 
 export default function HomePage() {
+  const [selected, setSelected] = useState("photos");
   const router = useRouter();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const {
@@ -70,10 +71,12 @@ export default function HomePage() {
     setUser(data);
   };
   useEffect(() => {
+    console.log("selected", selected);
+
     getData();
-    getVendorList();
-    getUserList();
-  }, []);
+    if (selected === "vendorList") getVendorList();
+    if (selected === "userList") getUserList();
+  }, [selected]);
 
   const resetForm = () => {
     console.log("reset form");
@@ -219,7 +222,11 @@ export default function HomePage() {
         >
           Logout
         </Button>
-        <Tabs aria-label="Options">
+        <Tabs
+          aria-label="Options"
+          selectedKey={selected}
+          onSelectionChange={setSelected}
+        >
           <Tab key="parkingList" title="Parking Spot List">
             <div className="flex flex-col gap-4 my-2">
               <div className="flex justify-between items-center my-5">
