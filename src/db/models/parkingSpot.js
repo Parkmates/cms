@@ -4,8 +4,6 @@ const { ObjectId } = require("mongodb");
 
 class ParkingSpotModels {
   static async getAll({ role, authorId }) {
-    console.log(role, authorId, "<<<<<");
-
     let opt = {};
     if (role === "vendor") {
       opt = {
@@ -42,8 +40,13 @@ class ParkingSpotModels {
     authorId,
     role,
   }) {
-    if (role !== "vendor")
-      throw { name: "Your dont have permission to create parking spot" };
+    if (role === "user") {
+      let error = new Error();
+      error.message = "Unauthorized";
+      error.name = "unauthorized";
+      throw error;
+    }
+
     const validation = z
       .object({
         name: z.string().min(1, "is required"),
@@ -88,8 +91,12 @@ class ParkingSpotModels {
     carFee,
     role,
   }) {
-    if (role !== "vendor")
-      throw { name: "Your account unauthorized to update parking spot data" };
+    if (role === "user") {
+      let error = new Error();
+      error.message = "Unauthorized";
+      error.name = "unauthorized";
+      throw error;
+    }
     const validation = z
       .object({
         name: z.string().min(1, "is required"),
@@ -120,8 +127,12 @@ class ParkingSpotModels {
   }
 
   static async deleteParkingSpot({ id, authorId, role }) {
-    if (role !== "vendor")
-      throw { name: "Your account unauthorized to delete parking spot" };
+    if (role === "user") {
+      let error = new Error();
+      error.message = "Unauthorized";
+      error.name = "unauthorized";
+      throw error;
+    }
     const result = await database.collection("parkingSpots").deleteOne({
       $and: [
         { _id: new ObjectId(String(id)) },
