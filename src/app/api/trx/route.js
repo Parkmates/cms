@@ -1,6 +1,6 @@
 const TransactionModels = require("@/db/models/transaction");
 
-async function GET() {
+async function GET(req, res) {
   try {
     const userId = req.headers.get("x-id");
     const result = await TransactionModels.getAll(userId);
