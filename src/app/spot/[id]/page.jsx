@@ -37,54 +37,37 @@ export default function ParkingPage({ params }) {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [action, setAction] = useState("");
-  const [formData, setFormData] = useState({
-    name: "",
-    username: "",
-    email: "",
-    password: "",
-  });
   const [parking, setParking] = useState({
-    name: "",
-    address: "",
-    imgUrl: "",
-    motorSpot: "",
-    carSpot: "",
-    motorFee: "",
-    carFee: "",
+    area: "",
+    fee: "",
+    floor: "",
+    quantity: "",
+    type: "",
   });
-  const getDataById = async () => {
+  const getData = async () => {
     const response = await fetch(`/api/parkspot/${params.id}`);
     const data = await response.json();
     setData(data);
   };
   useEffect(() => {
-    getDataById();
+    getData();
   }, []);
 
   const resetForm = () => {
     console.log("reset form");
 
     setParking({
-      name: "",
-      address: "",
-      imgUrl: "",
-      motorSpot: "",
-      carSpot: "",
-      motorFee: "",
-      carFee: "",
+      area: "",
+      fee: "",
+      floor: "",
+      quantity: "",
+      type: "",
     });
   };
 
   useEffect(() => {
     resetForm();
   }, [action]);
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
   const handleChangeParking = (e) => {
     const { name, value } = e.target;
     setParking({
@@ -92,33 +75,12 @@ export default function ParkingPage({ params }) {
       [name]: value,
     });
   };
-  const handleAddVendor = async (e) => {
-    e.preventDefault();
-    try {
-      // console.log(formData);
-      setIsLoading(true);
-      const response = await fetch("/api/users/addVendor", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      if (!response.ok) throw await response.json();
-      await getVendorList();
-      setIsLoading(false);
-      onOpenChange(false);
-    } catch (error) {
-      setIsLoading(false);
-      toast.error(error.msg);
-    }
-  };
   const handleAddParking = async (e) => {
     e.preventDefault();
     try {
       console.log(parking);
       setIsLoading(true);
-      const response = await fetch("/api/parkspot", {
+      const response = await fetch(`/api/parkspot/${params.id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -128,13 +90,11 @@ export default function ParkingPage({ params }) {
       if (!response.ok) throw await response.json();
 
       // reset form
-      parking.name = "";
-      parking.address = "";
-      parking.imgUrl = "";
-      parking.motorSpot = "";
-      parking.carSpot = "";
-      parking.motorFee = "";
-      parking.carFee = "";
+      parking.area = "";
+      parking.fee = "";
+      parking.floor = "";
+      parking.quantity = "";
+      parking.type = "";
       await getData();
       setIsLoading(false);
       await toast.success("Success add parking spot");
@@ -293,73 +253,6 @@ export default function ParkingPage({ params }) {
           </Table>
         </div>
       </div>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="center">
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                Add vendor
-              </ModalHeader>
-              <ModalBody>
-                <Input
-                  isRequired
-                  label="Name"
-                  placeholder="Enter your name"
-                  type="text"
-                  variant="bordered"
-                  name="name"
-                  onChange={handleChange}
-                  value={formData.name}
-                />
-                <Input
-                  isRequired
-                  label="Username"
-                  placeholder="Enter your username"
-                  type="text"
-                  variant="bordered"
-                  name="username"
-                  onChange={handleChange}
-                  value={formData.username}
-                />
-                <Input
-                  isRequired
-                  label="Email"
-                  placeholder="Enter your email"
-                  type="email"
-                  variant="bordered"
-                  name="email"
-                  onChange={handleChange}
-                  value={formData.email}
-                />
-                <Input
-                  isRequired
-                  label="Password"
-                  placeholder="Enter your password"
-                  type="text"
-                  variant="bordered"
-                  name="password"
-                  onChange={handleChange}
-                  value={formData.password}
-                />
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
-                </Button>
-                <Button
-                  type="submit"
-                  className="bg-black text-white"
-                  variant="flat"
-                  onClick={(e) => handleAddVendor(e)}
-                  isLoading={isLoading}
-                >
-                  submit
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
       <Modal
         isOpen={isOpenAddParking}
         onOpenChange={onOpenAddParkingChange}
@@ -369,77 +262,58 @@ export default function ParkingPage({ params }) {
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                {action === "add" ? "Add" : "Edit"} parking spot
+                {action === "add" ? "Add" : "Edit"} detail parking spot
               </ModalHeader>
               <ModalBody>
                 <Input
                   isRequired
-                  label="Name"
-                  placeholder="Enter parking name"
+                  label="Type"
+                  placeholder="Enter parking type"
                   type="text"
                   variant="bordered"
-                  name="name"
+                  name="type"
                   onChange={handleChangeParking}
-                  value={parking.name}
-                />
-                <Textarea
-                  isRequired
-                  variant="bordered"
-                  label="Address"
-                  placeholder="Enter your address"
-                  name="address"
-                  onChange={handleChangeParking}
-                  value={parking.address}
+                  value={parking.type}
                 />
                 <Input
                   isRequired
-                  label="Image"
-                  placeholder="Enter your image"
+                  label="Fee"
+                  placeholder="Enter your fee"
+                  type="number"
+                  variant="bordered"
+                  name="fee"
+                  onChange={handleChangeParking}
+                  value={parking.fee}
+                />
+                <Input
+                  isRequired
+                  label="Area"
+                  placeholder="Enter your area"
                   type="text"
                   variant="bordered"
-                  name="imgUrl"
+                  name="area"
                   onChange={handleChangeParking}
-                  value={parking.imgUrl}
+                  value={parking.area}
                 />
                 <Input
                   isRequired
-                  label="Motor Spot"
-                  placeholder="Enter your motorSpot"
-                  type="number"
+                  label="Floor"
+                  placeholder="Enter your floor"
+                  type="text"
                   variant="bordered"
-                  name="motorSpot"
+                  name="floor"
                   onChange={handleChangeParking}
-                  value={parking.motorSpot}
+                  value={parking.floor}
                 />
                 <Input
                   isRequired
-                  label="Motor Fee"
-                  placeholder="Enter your motorFee"
+                  label="Quantity"
+                  placeholder="Enter your quantity"
                   type="number"
                   variant="bordered"
-                  name="motorFee"
+                  name="quantity"
                   onChange={handleChangeParking}
-                  value={parking.motorFee}
-                />
-                <Input
-                  isRequired
-                  label="Car Spot"
-                  placeholder="Enter your carSpot"
-                  type="number"
-                  variant="bordered"
-                  name="carSpot"
-                  onChange={handleChangeParking}
-                  value={parking.carSpot}
-                />
-                <Input
-                  isRequired
-                  label="Car Fee"
-                  placeholder="Enter your carFee"
-                  type="number"
-                  variant="bordered"
-                  name="carFee"
-                  onChange={handleChangeParking}
-                  value={parking.carFee}
+                  value={parking.quantity}
                 />
               </ModalBody>
               <ModalFooter>
