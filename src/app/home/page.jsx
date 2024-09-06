@@ -16,6 +16,7 @@ import {
   ModalBody,
   ModalFooter,
   Input,
+  Textarea,
 } from "@nextui-org/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fas } from "@fortawesome/free-solid-svg-icons";
@@ -24,6 +25,11 @@ import { toast } from "react-toastify";
 
 export default function HomePage() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const {
+    isOpen: isOpenAddParking,
+    onOpen: onOpenAddParking,
+    onOpenChange: onOpenAddParkingChange,
+  } = useDisclosure();
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -31,6 +37,15 @@ export default function HomePage() {
     username: "",
     email: "",
     password: "",
+  });
+  const [parking, setParking] = useState({
+    name: "",
+    address: "",
+    imgUrl: "",
+    motorSpot: "",
+    carSpot: "",
+    motorFee: "",
+    carFee: "",
   });
   const getData = async () => {
     const response = await fetch("/api/parkspot");
@@ -47,6 +62,13 @@ export default function HomePage() {
       [name]: value,
     });
   };
+  const handleChangeParking = (e) => {
+    const { name, value } = e.target;
+    setParking({
+      ...parking,
+      [name]: value,
+    });
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -58,6 +80,25 @@ export default function HomePage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
+      });
+      if (!response.ok) throw await response.json();
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      toast.error(error.msg);
+    }
+  };
+  const handleAddParking = async (e) => {
+    e.preventDefault();
+    try {
+      console.log(parking);
+      setIsLoading(true);
+      const response = await fetch("/api/parkspot", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(parking),
       });
       if (!response.ok) throw await response.json();
       setIsLoading(false);
@@ -85,6 +126,7 @@ export default function HomePage() {
                 Add Vendor
               </Button>
               <Button
+                onPress={onOpenAddParking}
                 className="bg-black text-white"
                 variant="flat"
                 startContent={
@@ -196,6 +238,106 @@ export default function HomePage() {
                   className="bg-black text-white"
                   variant="flat"
                   onClick={(e) => handleSubmit(e)}
+                  isLoading={isLoading}
+                >
+                  submit
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+      <Modal
+        isOpen={isOpenAddParking}
+        onOpenChange={onOpenAddParkingChange}
+        placement="center"
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Add parking spot
+              </ModalHeader>
+              <ModalBody>
+                <Input
+                  isRequired
+                  label="Name"
+                  placeholder="Enter parking name"
+                  type="text"
+                  variant="bordered"
+                  name="name"
+                  onChange={handleChangeParking}
+                  value={parking.name}
+                />
+                <Textarea
+                  isRequired
+                  variant="bordered"
+                  label="Address"
+                  placeholder="Enter your address"
+                  name="address"
+                  onChange={handleChangeParking}
+                  value={parking.address}
+                />
+                <Input
+                  isRequired
+                  label="Image"
+                  placeholder="Enter your image"
+                  type="text"
+                  variant="bordered"
+                  name="imgUrl"
+                  onChange={handleChangeParking}
+                  value={parking.imgUrl}
+                />
+                <Input
+                  isRequired
+                  label="Motor Spot"
+                  placeholder="Enter your motorSpot"
+                  type="number"
+                  variant="bordered"
+                  name="motorSpot"
+                  onChange={handleChangeParking}
+                  value={parking.motorSpot}
+                />
+                <Input
+                  isRequired
+                  label="Motor Fee"
+                  placeholder="Enter your motorFee"
+                  type="number"
+                  variant="bordered"
+                  name="motorFee"
+                  onChange={handleChangeParking}
+                  value={parking.motorFee}
+                />
+                <Input
+                  isRequired
+                  label="Car Spot"
+                  placeholder="Enter your carSpot"
+                  type="number"
+                  variant="bordered"
+                  name="carSpot"
+                  onChange={handleChangeParking}
+                  value={parking.carSpot}
+                />
+                <Input
+                  isRequired
+                  label="Car Fee"
+                  placeholder="Enter your carFee"
+                  type="number"
+                  variant="bordered"
+                  name="carFee"
+                  onChange={handleChangeParking}
+                  value={parking.carFee}
+                />
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-black text-white"
+                  variant="flat"
+                  onClick={(e) => handleAddParking(e)}
                   isLoading={isLoading}
                 >
                   submit
