@@ -42,11 +42,6 @@ class ParkingSpotModels {
       }
     }]
 
-    // let opt = { _id: new ObjectId(String(id)) };
-    // if (role === "vendor") {
-    //   opt["$and"] = [{ authorId: new ObjectId(String(authorId)) }];
-    // }
-
     const parkingSpot = await database.collection("parkingSpots").aggregate(agg).toArray();
 
     if (!parkingSpot) throw { name: "ParkingSpotNotFound" };
