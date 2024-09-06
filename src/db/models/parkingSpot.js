@@ -19,30 +19,35 @@ class ParkingSpotModels {
   }
 
   static async getById({ id, authorId, role }) {
-    const agg = role === "vendor" ? [
+    const agg = [
       {
-        '$match': {
-          '_id': new ObjectId(String(id))
-        }
-      }, {
-        '$match': {
-          'authorId': new ObjectId(String(authorId))
-        }
-      }, {
-        '$lookup': {
-          'from': 'spotDetails', 
-          'localField': '_id', 
-          'foreignField': 'parkingSpotId', 
-          'as': 'spotList'
-        }
-      }
-    ] : [{
-      '$match': {
-        '_id': new ObjectId(String(id))
-      }
-    }]
+        $match: {
+          _id: new ObjectId(String(id)),
+        },
+      },
+      ...(role === "vendor"
+        ? [
+            {
+              $match: {
+                authorId: new ObjectId(String(authorId)),
+              },
+            },
+          ]
+        : []),
+      {
+        $lookup: {
+          from: "spotDetails",
+          localField: "_id",
+          foreignField: "parkingSpotId",
+          as: "spotList",
+        },
+      },
+    ];
 
-    const parkingSpot = await database.collection("parkingSpots").aggregate(agg).toArray();
+    const parkingSpot = await database
+      .collection("parkingSpots")
+      .aggregate(agg)
+      .toArray();
 
     // if (!parkingSpot) throw { name: "ParkingSpotNotFound" };
     if (!parkingSpot) {
@@ -54,13 +59,7 @@ class ParkingSpotModels {
     return parkingSpot[0];
   }
 
-  static async createParkingSpot({
-    name,
-    address,
-    imgUrl,
-    authorId,
-    role,
-  }) {
+  static async createParkingSpot({ name, address, imgUrl, authorId, role }) {
     if (role === "user") {
       let error = new Error();
       error.message = "Unauthorized";
@@ -196,25 +195,23 @@ class ParkingSpotModels {
     return "Success update spot detail";
   }
 
-  static async deleteSpotDetail({id,
-    spotDetailId,
-    role,}) {
-      if (role === "user") {
-        let error = new Error();
-        error.message = "Unauthorized";
-        error.name = "unauthorized";
-        throw error;
-      }
-
-      const result = await database.collection("spotDetails").deleteOne({
-        $and: [
-          { _id: new ObjectId(String(spotDetailId)) },
-          { parkingSpotId: new ObjectId(String(id)) },
-        ],
-      })
-
-      return "Success delete spot detail"
+  static async deleteSpotDetail({ id, spotDetailId, role }) {
+    if (role === "user") {
+      let error = new Error();
+      error.message = "Unauthorized";
+      error.name = "unauthorized";
+      throw error;
     }
+
+    const result = await database.collection("spotDetails").deleteOne({
+      $and: [
+        { _id: new ObjectId(String(spotDetailId)) },
+        { parkingSpotId: new ObjectId(String(id)) },
+      ],
+    });
+
+    return "Success delete spot detail";
+  }
 }
 
 module.exports = ParkingSpotModels;

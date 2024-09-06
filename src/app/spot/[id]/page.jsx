@@ -26,7 +26,7 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { deleteCookie } from "@/app/actions";
 
-export default function ParkingPage() {
+export default function ParkingPage({ params }) {
   const router = useRouter();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const {
@@ -52,13 +52,13 @@ export default function ParkingPage() {
     motorFee: "",
     carFee: "",
   });
-  const getData = async () => {
-    const response = await fetch("/api/parkspot");
+  const getDataById = async () => {
+    const response = await fetch(`/api/parkspot/${params.id}`);
     const data = await response.json();
     setData(data);
   };
   useEffect(() => {
-    getData();
+    getDataById();
   }, []);
 
   const resetForm = () => {
@@ -239,26 +239,21 @@ export default function ParkingPage() {
           </div>
           <Table aria-label="Example static collection table">
             <TableHeader>
-              <TableColumn>NAME</TableColumn>
-              <TableColumn>IMAGE</TableColumn>
-              <TableColumn>MOTOR SPOT</TableColumn>
-              <TableColumn>CAR SPOT</TableColumn>
+              <TableColumn>TYPE</TableColumn>
+              <TableColumn>FEE</TableColumn>
+              <TableColumn>AREA</TableColumn>
+              <TableColumn>FLOOR</TableColumn>
+              <TableColumn>QTY</TableColumn>
               <TableColumn>ACTIONS</TableColumn>
             </TableHeader>
             <TableBody>
-              {data.map((item) => (
+              {data?.spotList?.map((item) => (
                 <TableRow key={item._id}>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell>
-                    <Image
-                      isZoomed
-                      className="w-[100px] h-[63px]"
-                      src={item.imgUrl}
-                      alt={item.name}
-                    />
-                  </TableCell>
-                  <TableCell>{item.motorSpot}</TableCell>
-                  <TableCell>{item.carSpot}</TableCell>
+                  <TableCell>{item.type}</TableCell>
+                  <TableCell>{item.fee}</TableCell>
+                  <TableCell>{item.area}</TableCell>
+                  <TableCell>{item.floor}</TableCell>
+                  <TableCell>{item.quantity}</TableCell>
                   <TableCell className="space-x-2">
                     <Button
                       onPress={() => {
