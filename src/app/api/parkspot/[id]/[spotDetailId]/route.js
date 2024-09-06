@@ -1,4 +1,5 @@
 const ParkingSpotModels = require("@/db/models/parkingSpot");
+const { z } = require("zod");
 
 async function PUT(req, res) {
   try {
@@ -26,8 +27,8 @@ async function PUT(req, res) {
       msgError = error.errors[0].path[0] + " " + error.errors[0].message;
       status = 400;
     }
-    if (error.name === "Unauthorized") {
-      status = 404
+    if (error.name === "unauthorized") {
+      status = 403
     }
     return Response.json(
       {
@@ -60,8 +61,8 @@ async function DELETE(req, res) {
       msgError = error.errors[0].path[0] + " " + error.errors[0].message;
       status = 400;
     }
-    if (error.name === "Unauthorized") {
-      status = 404
+    if (error.name === "unauthorized") {
+      status = 403
     }
     return Response.json(
       {

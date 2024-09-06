@@ -83,7 +83,7 @@ class UserModels {
   static async addVendor({ name, username, email, password, userRole }) {
     if (userRole !== "admin") {
       let error = new Error();
-      error.message = "Unauthorized";
+      error.message = "Can not access, sorry";
       error.name = "unauthorized";
       throw error;
     }
@@ -130,7 +130,7 @@ class UserModels {
   static async getAll({ currentUserrole, role }) {
     if (currentUserrole !== "admin") {
       let error = new Error();
-      error.message = "Unauthorized";
+      error.message = "Can not access, sorry";
       error.name = "unauthorized";
       throw error;
     }
@@ -212,7 +212,12 @@ class UserModels {
   }
 
   static async deleteUser({ id, role }) {
-    if (role !== "admin") throw { name: "Unauthorized" };
+    if (role !== "admin") {
+      let error = new Error();
+      error.message = "Can not access, sorry";
+      error.name = "unauthorized";
+      throw error;
+    }
     const result = await database.collection("users").deleteOne({
       _id: new ObjectId(String(id)),
     });

@@ -1,4 +1,5 @@
 const TransactionModels = require("@/db/models/transaction");
+const { z } = require("zod");
 
 async function PUT(req, res) {
   try {
@@ -13,6 +14,10 @@ async function PUT(req, res) {
 
     if (error.name === "CancelFailed") {
       status = 409;
+    }
+    if (error instanceof z.ZodError) {
+      msgError = error.errors[0].path[0] + " " + error.errors[0].message;
+      status = 400;
     }
     return Response.json(
       {

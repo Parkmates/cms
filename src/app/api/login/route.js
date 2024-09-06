@@ -9,7 +9,6 @@ async function POST(req) {
 
     return Response.json({ access_token: result });
   } catch (error) {
-    // console.log(error)
     let msgError = error.message || "Internal server error";
     let status = 500;
 
@@ -17,12 +16,15 @@ async function POST(req) {
       msgError = error.errors[0].path[0] + " " + error.errors[0].message;
       status = 400;
     }
-    if (error.name === "Unauthorized") {
-      status = 401
-    }
     if (error.name === "Invalid Email/Password") {
       status = 400
     }
+    if (error.name === "NotFound") {
+      status = 404
+    }
+    // if (error.name === "Unauthorized") {
+    //   status = 401
+    // }
     return Response.json(
       {
         msg: msgError,

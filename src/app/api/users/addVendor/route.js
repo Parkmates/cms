@@ -22,8 +22,11 @@ async function POST(req) {
       msgError = error.errors[0].path[0] + " " + error.errors[0].message;
       status = 400;
     }
-    if (error.name === "Unauthorized") {
-      status = 401;
+    if (error.name === "unauthorized") {
+      status = 403;
+    }
+    if (error.name === "invalidUsername" || "invalidEmail") {
+      status = 400
     }
     return Response.json(
       {
