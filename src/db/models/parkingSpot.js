@@ -94,10 +94,6 @@ class ParkingSpotModels {
     name,
     address,
     imgUrl,
-    motorSpot,
-    carSpot,
-    motorFee,
-    carFee,
     role,
   }) {
     if (role === "user") {
@@ -111,32 +107,23 @@ class ParkingSpotModels {
         name: z.string().min(1, "is required"),
         address: z.string().min(1, "is required"),
         imgUrl: z.string().min(1, "is required"),
-        motorSpot: z.string().min(1, "is required"),
-        carSpot: z.string().min(1, "is required"),
-        motorFee: z.string().min(1, "is required"),
-        carFee: z.string().min(1, "is required"),
       })
       .safeParse({
         name,
         address,
         imgUrl,
-        motorSpot,
-        carSpot,
-        motorFee,
-        carFee,
       });
     if (!validation.success) throw validation.error;
     const result = await database.collection("parkingSpots").updateOne(
       {
         _id: new ObjectId(String(id)),
       },
-      { $set: { name, address, imgUrl, motorSpot, carSpot, motorFee, carFee } }
+      { $set: { name, address, imgUrl } }
     );
     return "Success update parking spot";
   }
 
   static async deleteParkingSpot({ id, authorId, role }) {
-    console.log(id, authorId, role);
 
     if (role === "user") {
       let error = new Error();
