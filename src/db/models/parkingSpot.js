@@ -19,24 +19,44 @@ class ParkingSpotModels {
   }
 
   static async getById({ id, authorId, role }) {
-    let opt = { _id: new ObjectId(String(id)) };
-    if (role === "vendor") {
-      opt["$and"] = [{ authorId: new ObjectId(String(authorId)) }];
-    }
+    const agg = role === "vendor" ? [
+      {
+        '$match': {
+          '_id': new ObjectId(String(id))
+        }
+      }, {
+        '$match': {
+          'authorId': new ObjectId(String(authorId))
+        }
+      }, {
+        '$lookup': {
+          'from': 'spotDetails', 
+          'localField': '_id', 
+          'foreignField': 'parkingSpotId', 
+          'as': 'spotList'
+        }
+      }
+    ] : [{
+      '$match': {
+        '_id': new ObjectId(String(id))
+      }
+    }]
 
-    const parkingSpot = await database.collection("parkingSpots").findOne(opt);
+    // let opt = { _id: new ObjectId(String(id)) };
+    // if (role === "vendor") {
+    //   opt["$and"] = [{ authorId: new ObjectId(String(authorId)) }];
+    // }
+
+    const parkingSpot = await database.collection("parkingSpots").aggregate(agg).toArray();
+
     if (!parkingSpot) throw { name: "ParkingSpotNotFound" };
-    return parkingSpot;
+    return parkingSpot[0];
   }
 
   static async createParkingSpot({
     name,
     address,
     imgUrl,
-    motorSpot,
-    carSpot,
-    motorFee,
-    carFee,
     authorId,
     role,
   }) {
@@ -52,29 +72,17 @@ class ParkingSpotModels {
         name: z.string().min(1, "is required"),
         address: z.string().min(1, "is required"),
         imgUrl: z.string().min(1, "is required"),
-        motorSpot: z.string().min(1, "is required"),
-        carSpot: z.string().min(1, "is required"),
-        motorFee: z.string().min(1, "is required"),
-        carFee: z.string().min(1, "is required"),
       })
       .safeParse({
         name,
         address,
         imgUrl,
-        motorSpot,
-        carSpot,
-        motorFee,
-        carFee,
       });
     if (!validation.success) throw validation.error;
     await database.collection("parkingSpots").insertOne({
       name,
       address,
       imgUrl,
-      motorSpot,
-      carSpot,
-      motorFee,
-      carFee,
       authorId: new ObjectId(String(authorId)),
     });
     return "Success create parking spot";

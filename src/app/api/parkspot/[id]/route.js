@@ -1,5 +1,4 @@
 const ParkingSpotModels = require("@/db/models/parkingSpot");
-const { cookies } = require("next/headers");
 const { z } = require("zod");
 
 async function GET(req, res) {
