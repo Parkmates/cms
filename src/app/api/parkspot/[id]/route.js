@@ -32,7 +32,7 @@ async function PUT(req, res) {
       carSpot,
       motorFee,
       carFee,
-      role
+      role,
     });
 
     return Response.json({ msg: result });
@@ -61,12 +61,29 @@ async function DELETE(req, res) {
     const authorId = req.headers.get("x-id");
     const role = req.headers.get("x-role");
 
-    const result = await ParkingSpotModels.deleteParkingSpot({id, authorId, role});
+    const result = await ParkingSpotModels.deleteParkingSpot({
+      id,
+      authorId,
+      role,
+    });
 
     return Response.json(result);
   } catch (error) {
-    console.log(error);
-    return Response.json(error);
+    let msgError = error.message || "Internal server error";
+    let status = 500;
+
+    if (error instanceof z.ZodError) {
+      msgError = error.errors[0].path[0] + " " + error.errors[0].message;
+      status = 400;
+    }
+    return Response.json(
+      {
+        msg: msgError,
+      },
+      {
+        status: status,
+      }
+    );
   }
 }
 

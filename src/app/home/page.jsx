@@ -171,6 +171,21 @@ export default function HomePage() {
       toast.error(error.msg);
     }
   };
+  const handleDelete = async (id) => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(`/api/parkspot/${id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw await response.json();
+      await getData();
+      toast.success("Success delete parking spot");
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      toast.error(error.msg);
+    }
+  };
   return (
     <>
       <div className="p-4 md:px-12 md:py-7 md:mx-9 h-screen">
@@ -226,7 +241,7 @@ export default function HomePage() {
                   </TableCell>
                   <TableCell>{item.motorSpot}</TableCell>
                   <TableCell>{item.carSpot}</TableCell>
-                  <TableCell>
+                  <TableCell className="space-x-2">
                     <Button
                       onPress={() => {
                         setAction("edit");
@@ -238,6 +253,21 @@ export default function HomePage() {
                       startContent={
                         <FontAwesomeIcon
                           icon={fas.faEdit}
+                          size="md"
+                          color="white"
+                        />
+                      }
+                    ></Button>
+                    <Button
+                      onPress={() => {
+                        handleDelete(item._id);
+                      }}
+                      isIconOnly
+                      className="bg-red-500 text-white"
+                      variant="flat"
+                      startContent={
+                        <FontAwesomeIcon
+                          icon={fas.faTrash}
                           size="md"
                           color="white"
                         />

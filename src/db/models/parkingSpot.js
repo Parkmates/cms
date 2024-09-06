@@ -127,6 +127,8 @@ class ParkingSpotModels {
   }
 
   static async deleteParkingSpot({ id, authorId, role }) {
+    console.log(id, authorId, role);
+
     if (role === "user") {
       let error = new Error();
       error.message = "Unauthorized";
