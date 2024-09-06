@@ -7,7 +7,6 @@ async function POST(req) {
         const result = await UserModels.register({ name, username, email, password })
         return Response.json(result)
     } catch (error) {
-        // console.log(error)
         let msgError = error.message || "Internal server error";
         let status = 500;
 

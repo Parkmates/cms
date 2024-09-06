@@ -1,11 +1,12 @@
 const TransactionModels = require("@/db/models/transaction");
+const { z } = require("zod");
 
 async function PUT(req, res) {
   try {
     const { id } = res.params;
     const userId = req.headers.get("x-id")
 
-    const result = await TransactionModels.checkOutTransaction({id, userId});
+    const result = await TransactionModels.checkOutTransaction({ id, userId });
     return Response.json({ msg: result })
   } catch (error) {
     let msgError = error.message || "Internal server error";
@@ -13,6 +14,10 @@ async function PUT(req, res) {
 
     if (error.name === "CheckoutFailed") {
       status = 409;
+    }
+    if (error instanceof z.ZodError) {
+      msgError = error.errors[0].path[0] + " " + error.errors[0].message;
+      status = 400;
     }
     return Response.json(
       {

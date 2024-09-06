@@ -49,7 +49,6 @@ class ParkingSpotModels {
       .aggregate(agg)
       .toArray();
 
-    // if (!parkingSpot) throw { name: "ParkingSpotNotFound" };
     if (!parkingSpot) {
       let error = new Error();
       error.message = "Parking Spot NotFound";
@@ -62,7 +61,7 @@ class ParkingSpotModels {
   static async createParkingSpot({ name, address, imgUrl, authorId, role }) {
     if (role === "user") {
       let error = new Error();
-      error.message = "Unauthorized";
+      error.message = "Can not access, sorry";
       error.name = "unauthorized";
       throw error;
     }
@@ -97,7 +96,7 @@ class ParkingSpotModels {
   }) {
     if (role === "user") {
       let error = new Error();
-      error.message = "Unauthorized";
+      error.message = "Can not access, sorry";
       error.name = "unauthorized";
       throw error;
     }
@@ -126,7 +125,7 @@ class ParkingSpotModels {
 
     if (role === "user") {
       let error = new Error();
-      error.message = "Unauthorized";
+      error.message = "Can not access, sorry";
       error.name = "unauthorized";
       throw error;
     }
@@ -150,7 +149,7 @@ class ParkingSpotModels {
   }) {
     if (role === "user") {
       let error = new Error();
-      error.message = "Unauthorized";
+      error.message = "Can not access, sorry";
       error.name = "unauthorized";
       throw error;
     }
@@ -178,7 +177,7 @@ class ParkingSpotModels {
   }) {
     if (role === "user") {
       let error = new Error();
-      error.message = "Unauthorized";
+      error.message = "Can not access, sorry";
       error.name = "unauthorized";
       throw error;
     }
@@ -198,7 +197,7 @@ class ParkingSpotModels {
   static async deleteSpotDetail({ id, spotDetailId, role }) {
     if (role === "user") {
       let error = new Error();
-      error.message = "Unauthorized";
+      error.message = "Can not access, sorry";
       error.name = "unauthorized";
       throw error;
     }

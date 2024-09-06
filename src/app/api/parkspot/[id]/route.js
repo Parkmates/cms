@@ -57,7 +57,7 @@ async function PUT(req, res) {
       status = 400;
     }
     if (error.name === "unauthorized") {
-      status = 401
+      status = 403
     }
     return Response.json(
       {
@@ -92,7 +92,7 @@ async function DELETE(req, res) {
       status = 400;
     }
     if (error.name === "unauthorized") {
-      status = 401
+      status = 403
     }
     return Response.json(
       {
@@ -123,7 +123,7 @@ async function POST(req, res) {
       status = 400;
     }
     if (error.name === "unauthorized") {
-      status = 404
+      status = 403
     }
     return Response.json(
       {

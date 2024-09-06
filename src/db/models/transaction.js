@@ -38,7 +38,6 @@ class TransactionModels {
         { userId: new ObjectId(String(userId)) },
       ],
       });
-    // if (spotValidate) throw { name: "AlreadyBookSpot" };
     if (spotValidate) {
       let error = new Error();
       error.message = "Already BookSpot";
@@ -67,7 +66,6 @@ class TransactionModels {
         $set: { isCheckin: true },
       }
     );
-    // if (!transaction.modifiedCount) throw { name: "CheckinFailed" };
     if (!transaction.modifiedCount) {
       let error = new Error();
       error.message = "Checkin Failed";
@@ -89,7 +87,6 @@ class TransactionModels {
         $set: { isActive: false },
       }
     );
-    // if (!transaction.modifiedCount) throw { name: "CheckoutFailed" };
     if (!transaction.modifiedCount) {
       let error = new Error();
       error.message = "Checkout Failed";
@@ -111,7 +108,6 @@ class TransactionModels {
         $set: { isActive: false, isCheckin: false },
       }
     );
-    // if (!transaction.modifiedCount) throw { name: "CancelFailed" };
     if (!transaction.modifiedCount) {
       let error = new Error();
       error.message = "Cancel Failed";
