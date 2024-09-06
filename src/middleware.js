@@ -4,7 +4,7 @@ const { verifyToken } = require("./helpers/jwt");
 
 export async function middleware(req) {
   const cookie = cookies().get("Authorization");
-  // console.log("middleware");
+  console.log("middleware");
   // console.log("cookie", cookie);
   if (req.nextUrl.pathname.startsWith("/login")) {
     if (cookie) {
@@ -12,7 +12,10 @@ export async function middleware(req) {
     }
   }
 
-  if (req.nextUrl.pathname.startsWith("/home")) {
+  if (
+    req.nextUrl.pathname.startsWith("/home") ||
+    req.nextUrl.pathname.startsWith("/spot")
+  ) {
     if (!cookie) {
       return NextResponse.redirect(new URL("/login", req.url));
     }
@@ -73,5 +76,6 @@ export const config = {
     "/login",
     "/register",
     "/home",
+    "/spot/:path*",
   ],
 };
