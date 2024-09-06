@@ -7,7 +7,6 @@ import {
   TableRow,
   TableCell,
   Button,
-  Tooltip,
   Image,
   useDisclosure,
   Modal,
@@ -17,6 +16,8 @@ import {
   ModalFooter,
   Input,
   Textarea,
+  Tabs,
+  Tab,
 } from "@nextui-org/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fas } from "@fortawesome/free-solid-svg-icons";
@@ -31,6 +32,8 @@ export default function HomePage() {
     onOpenChange: onOpenAddParkingChange,
   } = useDisclosure();
   const [data, setData] = useState([]);
+  const [vendor, setVendor] = useState([]);
+  const [user, setUser] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [action, setAction] = useState("");
   const [formData, setFormData] = useState({
@@ -53,8 +56,20 @@ export default function HomePage() {
     const data = await response.json();
     setData(data);
   };
+  const getVendorList = async () => {
+    const response = await fetch("/api/users?role=vendor");
+    const data = await response.json();
+    setVendor(data);
+  };
+  const getUserList = async () => {
+    const response = await fetch("/api/users?role=user");
+    const data = await response.json();
+    setUser(data);
+  };
   useEffect(() => {
     getData();
+    getVendorList();
+    getUserList();
   }, []);
 
   const resetForm = () => {
@@ -88,10 +103,10 @@ export default function HomePage() {
       [name]: value,
     });
   };
-  const handleSubmit = async (e) => {
+  const handleAddVendor = async (e) => {
     e.preventDefault();
     try {
-      console.log(formData);
+      // console.log(formData);
       setIsLoading(true);
       const response = await fetch("/api/users/addVendor", {
         method: "POST",
@@ -101,6 +116,7 @@ export default function HomePage() {
         body: JSON.stringify(formData),
       });
       if (!response.ok) throw await response.json();
+      await getVendorList();
       setIsLoading(false);
       onOpenChange(false);
     } catch (error) {
@@ -189,96 +205,236 @@ export default function HomePage() {
   return (
     <>
       <div className="p-4 md:px-12 md:py-7 md:mx-9 h-screen">
-        <div className="flex flex-col gap-4 my-2">
-          <div className="flex justify-between items-center my-5">
-            <h1 className="text-3xl">Parking Spot List</h1>
-            <div className="flex items-center gap-2">
-              {/* kalo role === admin */}
-              <Button
-                onPress={onOpen}
-                className="bg-black text-white"
-                variant="flat"
-                startContent={
-                  <FontAwesomeIcon icon={fas.faPlus} size="lg" color="white" />
-                }
-              >
-                Add Vendor
-              </Button>
-              <Button
-                onPress={() => {
-                  onOpenAddParking();
-                  setAction("add");
-                }}
-                className="bg-black text-white"
-                variant="flat"
-                startContent={
-                  <FontAwesomeIcon icon={fas.faPlus} size="lg" color="white" />
-                }
-              >
-                Add Parking Spot
-              </Button>
+        <Tabs aria-label="Options">
+          <Tab key="parkingList" title="Parking Spot List">
+            <div className="flex flex-col gap-4 my-2">
+              <div className="flex justify-between items-center my-5">
+                <h1 className="text-3xl">Parking Spot List</h1>
+                <div className="flex items-center gap-2">
+                  <Button
+                    onPress={() => {
+                      onOpenAddParking();
+                      setAction("add");
+                    }}
+                    className="bg-black text-white"
+                    variant="flat"
+                    startContent={
+                      <FontAwesomeIcon
+                        icon={fas.faPlus}
+                        size="lg"
+                        color="white"
+                      />
+                    }
+                  >
+                    Add Parking Spot
+                  </Button>
+                </div>
+              </div>
+              <Table aria-label="Example static collection table">
+                <TableHeader>
+                  <TableColumn>NAME</TableColumn>
+                  <TableColumn>IMAGE</TableColumn>
+                  <TableColumn>MOTOR SPOT</TableColumn>
+                  <TableColumn>CAR SPOT</TableColumn>
+                  <TableColumn>ACTIONS</TableColumn>
+                </TableHeader>
+                <TableBody>
+                  {data.map((item) => (
+                    <TableRow key={item._id}>
+                      <TableCell>{item.name}</TableCell>
+                      <TableCell>
+                        <Image
+                          isZoomed
+                          className="w-[100px] h-[63px]"
+                          src={item.imgUrl}
+                          alt={item.name}
+                        />
+                      </TableCell>
+                      <TableCell>{item.motorSpot}</TableCell>
+                      <TableCell>{item.carSpot}</TableCell>
+                      <TableCell className="space-x-2">
+                        <Button
+                          onPress={() => {
+                            setAction("edit");
+                            handleDetail(item._id);
+                          }}
+                          isIconOnly
+                          className="bg-black text-white"
+                          variant="flat"
+                          startContent={
+                            <FontAwesomeIcon
+                              icon={fas.faEdit}
+                              size="md"
+                              color="white"
+                            />
+                          }
+                        ></Button>
+                        <Button
+                          onPress={() => {
+                            handleDelete(item._id);
+                          }}
+                          isIconOnly
+                          className="bg-red-500 text-white"
+                          variant="flat"
+                          startContent={
+                            <FontAwesomeIcon
+                              icon={fas.faTrash}
+                              size="md"
+                              color="white"
+                            />
+                          }
+                        ></Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
-          </div>
-          <Table aria-label="Example static collection table">
-            <TableHeader>
-              <TableColumn>NAME</TableColumn>
-              <TableColumn>IMAGE</TableColumn>
-              <TableColumn>MOTOR SPOT</TableColumn>
-              <TableColumn>CAR SPOT</TableColumn>
-              <TableColumn>ACTIONS</TableColumn>
-            </TableHeader>
-            <TableBody>
-              {data.map((item) => (
-                <TableRow key={item._id}>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell>
-                    <Image
-                      isZoomed
-                      className="w-[100px] h-[63px]"
-                      src={item.imgUrl}
-                      alt={item.name}
-                    />
-                  </TableCell>
-                  <TableCell>{item.motorSpot}</TableCell>
-                  <TableCell>{item.carSpot}</TableCell>
-                  <TableCell className="space-x-2">
-                    <Button
-                      onPress={() => {
-                        setAction("edit");
-                        handleDetail(item._id);
-                      }}
-                      isIconOnly
-                      className="bg-black text-white"
-                      variant="flat"
-                      startContent={
-                        <FontAwesomeIcon
-                          icon={fas.faEdit}
-                          size="md"
-                          color="white"
-                        />
-                      }
-                    ></Button>
-                    <Button
-                      onPress={() => {
-                        handleDelete(item._id);
-                      }}
-                      isIconOnly
-                      className="bg-red-500 text-white"
-                      variant="flat"
-                      startContent={
-                        <FontAwesomeIcon
-                          icon={fas.faTrash}
-                          size="md"
-                          color="white"
-                        />
-                      }
-                    ></Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+          </Tab>
+          <Tab
+            key="vendorList"
+            title="
+          Vendor List"
+          >
+            <div className="flex flex-col gap-4 my-2">
+              <div className="flex justify-between items-center my-5">
+                <h1 className="text-3xl">Vendor List</h1>
+                <div className="flex items-center gap-2">
+                  {/* kalo role === admin */}
+                  <Button
+                    onPress={onOpen}
+                    className="bg-black text-white"
+                    variant="flat"
+                    startContent={
+                      <FontAwesomeIcon
+                        icon={fas.faPlus}
+                        size="lg"
+                        color="white"
+                      />
+                    }
+                  >
+                    Add Vendor
+                  </Button>
+                </div>
+              </div>
+              <Table aria-label="Example static collection table">
+                <TableHeader>
+                  <TableColumn>NAME</TableColumn>
+                  <TableColumn>USER NAME</TableColumn>
+                  <TableColumn>EMAIL</TableColumn>
+                  <TableColumn>ROLE</TableColumn>
+                  {/* <TableColumn>ACTIONS</TableColumn> */}
+                </TableHeader>
+                <TableBody>
+                  {vendor.map((item) => (
+                    <TableRow key={item._id}>
+                      <TableCell>{item.name}</TableCell>
+                      <TableCell>{item.username}</TableCell>
+                      <TableCell>{item.email}</TableCell>
+                      <TableCell>{item.role}</TableCell>
+                      {/* <TableCell className="space-x-2">
+                        <Button
+                          onPress={() => {
+                            setAction("edit");
+                            handleDetail(item._id);
+                          }}
+                          isIconOnly
+                          className="bg-black text-white"
+                          variant="flat"
+                          startContent={
+                            <FontAwesomeIcon
+                              icon={fas.faEdit}
+                              size="md"
+                              color="white"
+                            />
+                          }
+                        ></Button>
+                        <Button
+                          onPress={() => {
+                            handleDelete(item._id);
+                          }}
+                          isIconOnly
+                          className="bg-red-500 text-white"
+                          variant="flat"
+                          startContent={
+                            <FontAwesomeIcon
+                              icon={fas.faTrash}
+                              size="md"
+                              color="white"
+                            />
+                          }
+                        ></Button>
+                      </TableCell> */}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </Tab>
+          <Tab
+            key="userList"
+            title="
+          User List"
+          >
+            <div className="flex flex-col gap-4 my-2">
+              <div className="flex justify-between items-center my-5">
+                <h1 className="text-3xl">User List</h1>
+              </div>
+              <Table aria-label="Example static collection table">
+                <TableHeader>
+                  <TableColumn>NAME</TableColumn>
+                  <TableColumn>USER NAME</TableColumn>
+                  <TableColumn>EMAIL</TableColumn>
+                  <TableColumn>ROLE</TableColumn>
+                  {/* <TableColumn>ACTIONS</TableColumn> */}
+                </TableHeader>
+                <TableBody>
+                  {user.map((item) => (
+                    <TableRow key={item._id}>
+                      <TableCell>{item.name}</TableCell>
+                      <TableCell>{item.username}</TableCell>
+                      <TableCell>{item.email}</TableCell>
+                      <TableCell>{item.role}</TableCell>
+                      {/* <TableCell className="space-x-2">
+                        <Button
+                          onPress={() => {
+                            setAction("edit");
+                            handleDetail(item._id);
+                          }}
+                          isIconOnly
+                          className="bg-black text-white"
+                          variant="flat"
+                          startContent={
+                            <FontAwesomeIcon
+                              icon={fas.faEdit}
+                              size="md"
+                              color="white"
+                            />
+                          }
+                        ></Button>
+                        <Button
+                          onPress={() => {
+                            handleDelete(item._id);
+                          }}
+                          isIconOnly
+                          className="bg-red-500 text-white"
+                          variant="flat"
+                          startContent={
+                            <FontAwesomeIcon
+                              icon={fas.faTrash}
+                              size="md"
+                              color="white"
+                            />
+                          }
+                        ></Button>
+                      </TableCell> */}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </Tab>
+        </Tabs>
       </div>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="center">
         <ModalContent>
@@ -337,7 +493,7 @@ export default function HomePage() {
                   type="submit"
                   className="bg-black text-white"
                   variant="flat"
-                  onClick={(e) => handleSubmit(e)}
+                  onClick={(e) => handleAddVendor(e)}
                   isLoading={isLoading}
                 >
                   submit
