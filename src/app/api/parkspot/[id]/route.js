@@ -17,6 +17,9 @@ async function GET(req, res) {
       msgError = error.errors[0].path[0] + " " + error.errors[0].message;
       status = 400;
     }
+    if (error.name === "NotFound") {
+      status = 404
+    }
     return Response.json(
       {
         msg: msgError,
@@ -33,7 +36,7 @@ async function PUT(req, res) {
     const { id } = res.params;
     const role = req.headers.get("x-role");
 
-    const { name, address, imgUrl, motorSpot, carSpot, motorFee, carFee } =
+    const { name, address, imgUrl } =
       await req.json();
 
     const result = await ParkingSpotModels.updateParkingSpot({
@@ -41,10 +44,6 @@ async function PUT(req, res) {
       name,
       address,
       imgUrl,
-      motorSpot,
-      carSpot,
-      motorFee,
-      carFee,
       role,
     });
 
