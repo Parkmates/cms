@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import AuthLayout from "../layouts/Auth";
-import { Button, Input } from "@nextui-org/react";
+import { Button, Image, Input } from "@nextui-org/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
@@ -51,6 +51,11 @@ export default function Login() {
     <>
       <AuthLayout>
         <div className="flex flex-col gap-10">
+          <Image
+            className="object-cover"
+            alt="NextUI hero Image with delay"
+            src="/lg-light-removebg-preview.png"
+          />
           <h1 className="text-3xl">Welcome Back!</h1>
           <form onSubmit={(e) => handleSubmit(e)}>
             <div className="flex flex-col gap-5">
