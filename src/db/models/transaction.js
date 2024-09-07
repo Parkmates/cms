@@ -11,18 +11,16 @@ class TransactionModels {
   }
 
   static async getById({ id, userId }) {
-    const transaction = await database
-      .collection("transactions")
-      .findOne({
+    const transaction = await database.collection("transactions").findOne({
       $and: [
         { _id: new ObjectId(String(id)) },
         { userId: new ObjectId(String(userId)) },
       ],
-      });
+    });
     if (!transaction) {
       let error = new Error();
       error.message = "transaction Not Found";
-      error.name = "NotFound"
+      error.name = "NotFound";
       throw error;
     }
 
@@ -30,18 +28,16 @@ class TransactionModels {
   }
 
   static async createTransaction({ spotDetailId, userId }) {
-    const spotValidate = await database
-      .collection("transactions")
-      .findOne({
+    const spotValidate = await database.collection("transactions").findOne({
       $and: [
         { spotId: new ObjectId(String(spotId)) },
         { userId: new ObjectId(String(userId)) },
       ],
-      });
+    });
     if (spotValidate) {
       let error = new Error();
       error.message = "Already BookSpot";
-      error.name = "AlreadyBookSpot"
+      error.name = "AlreadyBookSpot";
       throw error;
     }
     const result = await database.collection("transactions").insertOne({
@@ -55,12 +51,19 @@ class TransactionModels {
   }
 
   static async checkInTransaction({ id, userId }) {
+    // kita cek dulu status isCheckin nya, kalo true, berarti gausah checkin lagi
+    const status = await database.collection("transactions").findOne({
+      _id: new ObjectId(String(id)),
+    });
+    if (status.isCheckin) {
+      let error = new Error();
+      error.message = "Already Checkin";
+      throw error;
+    }
+
     const transaction = await database.collection("transactions").updateOne(
       {
-        $and: [
-          { _id: new ObjectId(String(id)) },
-          { userId: new ObjectId(String(userId)) },
-        ],
+        _id: new ObjectId(String(id)),
       },
       {
         $set: { isCheckin: true },
@@ -69,28 +72,33 @@ class TransactionModels {
     if (!transaction.modifiedCount) {
       let error = new Error();
       error.message = "Checkin Failed";
-      error.name = "CheckinFailed"
       throw error;
     }
     return "Check-In Success";
   }
 
   static async checkOutTransaction({ id, userId }) {
+    const status = await database.collection("transactions").findOne({
+      _id: new ObjectId(String(id)),
+    });
+    if (!status.isCheckin) {
+      let error = new Error();
+      error.message = "You haven't checked in";
+      throw error;
+    }
+
     const transaction = await database.collection("transactions").updateOne(
       {
-        $and: [
-          { _id: new ObjectId(String(id)) },
-          { userId: new ObjectId(String(userId)) },
-        ],
+        _id: new ObjectId(String(id)),
       },
       {
-        $set: { isActive: false },
+        $set: { isActive: false, isCheckin: false },
       }
     );
     if (!transaction.modifiedCount) {
       let error = new Error();
       error.message = "Checkout Failed";
-      error.name = "CheckoutFailed"
+      error.name = "CheckoutFailed";
       throw error;
     }
     return "Check-Out Success";
@@ -99,10 +107,7 @@ class TransactionModels {
   static async cancelTransaction({ id, userId }) {
     const transaction = await database.collection("transactions").updateOne(
       {
-        $and: [
-          { _id: new ObjectId(String(id)) },
-          { userId: new ObjectId(String(userId)) },
-        ],
+        _id: new ObjectId(String(id)),
       },
       {
         $set: { isActive: false, isCheckin: false },
@@ -111,7 +116,7 @@ class TransactionModels {
     if (!transaction.modifiedCount) {
       let error = new Error();
       error.message = "Cancel Failed";
-      error.name = "CancelFailed"
+      error.name = "CancelFailed";
       throw error;
     }
     return "Cancel Success";
