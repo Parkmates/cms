@@ -27,6 +27,7 @@ import { deleteCookie } from "../actions";
 import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { CldUploadWidget } from "next-cloudinary";
+import QRCodeScanner from "@/components/QRCodeScanner";
 
 export default function HomePage() {
   const pathname = usePathname();
@@ -49,6 +50,11 @@ export default function HomePage() {
     isOpen: isOpenAddParking,
     onOpen: onOpenAddParking,
     onOpenChange: onOpenAddParkingChange,
+  } = useDisclosure();
+  const {
+    isOpen: isOpenScanQR,
+    onOpen: onOpenScanQR,
+    onOpenChange: onOpenScanQRChange,
   } = useDisclosure();
   const [data, setData] = useState([]);
   const [vendor, setVendor] = useState([]);
@@ -218,6 +224,10 @@ export default function HomePage() {
       imgUrl: prev.imgUrl.filter((_, i) => i !== index),
     }));
   };
+  const handleScanSuccess = (decodedText, decodedResult) => {
+    console.log(`Code matched = ${decodedText}`);
+    alert(`Transaction ID: ${decodedText}`);
+  };
   return (
     <>
       <div className="p-4 md:px-12 md:py-7 md:mx-9 h-screen">
@@ -258,6 +268,22 @@ export default function HomePage() {
                     }
                   >
                     Add Parking Spot
+                  </Button>
+                  <Button
+                    onPress={() => {
+                      onOpenScanQR();
+                    }}
+                    className="bg-green-500 text-white"
+                    variant="flat"
+                    startContent={
+                      <FontAwesomeIcon
+                        icon={fas.faQrcode}
+                        size="lg"
+                        color="white"
+                      />
+                    }
+                  >
+                    Scan QR
                   </Button>
                 </div>
               </div>
@@ -667,6 +693,36 @@ export default function HomePage() {
                     update
                   </Button>
                 )}
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+      <Modal
+        placement="center"
+        isOpen={isOpenScanQR}
+        onOpenChange={onOpenScanQRChange}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">Scan QR</ModalHeader>
+              <ModalBody>
+                <QRCodeScanner onScanSuccess={handleScanSuccess} />
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-black text-white"
+                  variant="flat"
+                  onClick={() => console.log("scan")}
+                  isLoading={isLoading}
+                >
+                  submit
+                </Button>
               </ModalFooter>
             </>
           )}
