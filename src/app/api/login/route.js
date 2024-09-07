@@ -9,7 +9,7 @@ async function POST(req) {
 
     return Response.json({ access_token: result });
   } catch (error) {
-    // console.log(error)
+    console.log(error)
     let msgError = error.message || "Internal server error";
     let status = 500;
 
