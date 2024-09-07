@@ -131,6 +131,20 @@ class ParkingSpotModels {
     return { result: "Success delete parking spot" };
   }
 
+  static async getSpotDetailById({ id, spotDetailId }) {
+    const spotDetail = await database.collection("spotDetails").findOne({
+      _id: new ObjectId(String(spotDetailId)),
+      parkingSpotId: new ObjectId(String(id)),
+    });
+
+    if (!spotDetail) {
+      let error = new Error();
+      error.message = "Spot Detail NotFound";
+      throw error;
+    }
+    return spotDetail;
+  }
+
   static async createSpotDetail({
     type,
     quantity,
