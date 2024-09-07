@@ -28,6 +28,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { CldUploadWidget } from "next-cloudinary";
 import QRCodeScanner from "@/components/QRCodeScanner";
+import QRScannerComponent from "@/components/scan";
 
 export default function HomePage() {
   const pathname = usePathname();
@@ -708,22 +709,9 @@ export default function HomePage() {
             <>
               <ModalHeader className="flex flex-col gap-1">Scan QR</ModalHeader>
               <ModalBody>
-                <QRCodeScanner onScanSuccess={handleScanSuccess} />
+                {/* <QRCodeScanner onScanSuccess={handleScanSuccess} /> */}
+                <QRScannerComponent />
               </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
-                </Button>
-                <Button
-                  type="submit"
-                  className="bg-black text-white"
-                  variant="flat"
-                  onClick={() => console.log("scan")}
-                  isLoading={isLoading}
-                >
-                  submit
-                </Button>
-              </ModalFooter>
             </>
           )}
         </ModalContent>
