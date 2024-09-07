@@ -582,36 +582,34 @@ export default function HomePage() {
                   onChange={handleChangeParking}
                   value={parking.address}
                 />
-                {action === "edit" && (
-                  <>
-                    <div className="overflow-x-auto whitespace-nowrap border border-gray-300 p-3 rounded-lg">
-                      {parking.imgUrl.map((url, index) => (
-                        <div key={index} className="relative inline-block mr-2">
-                          <Image
-                            isZoomed
-                            width={140}
-                            height={140}
-                            alt={`Uploaded Image ${index + 1}`}
-                            src={url}
-                          />
-                          <Button
-                            onPress={() => handleRemoveImage(index)}
-                            isIconOnly
-                            className="absolute top-1 right-1 z-10 bg-red-500 text-white rounded-full w-5 h-5"
-                            variant="flat"
-                            startContent={
-                              <FontAwesomeIcon
-                                icon={fas.faXmark}
-                                size="xs"
-                                color="white"
-                              />
-                            }
-                          ></Button>
-                        </div>
-                      ))}
+                <div className="overflow-x-auto whitespace-nowrap border border-gray-300 p-3 rounded-lg">
+                  {parking.imgUrl.map((url, index) => (
+                    <div key={index} className="relative inline-block mr-2">
+                      <Image
+                        isZoomed
+                        width={140}
+                        height={140}
+                        alt={`Uploaded Image ${index + 1}`}
+                        src={url}
+                      />
+                      {action === "edit" && (
+                        <Button
+                          onPress={() => handleRemoveImage(index)}
+                          isIconOnly
+                          className="absolute top-1 right-1 z-10 bg-red-500 text-white rounded-full w-5 h-5"
+                          variant="flat"
+                          startContent={
+                            <FontAwesomeIcon
+                              icon={fas.faXmark}
+                              size="xs"
+                              color="white"
+                            />
+                          }
+                        ></Button>
+                      )}
                     </div>
-                  </>
-                )}
+                  ))}
+                </div>
                 <CldUploadWidget
                   uploadPreset="parkmate"
                   onSuccess={(result, { widget }) => {
@@ -638,7 +636,14 @@ export default function HomePage() {
                 </CldUploadWidget>
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
+                <Button
+                  color="danger"
+                  variant="light"
+                  onPress={() => {
+                    onClose();
+                    setAction("");
+                  }}
+                >
                   Close
                 </Button>
                 {action === "add" ? (
