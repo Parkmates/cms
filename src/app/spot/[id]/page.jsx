@@ -14,6 +14,11 @@ import {
   ModalBody,
   ModalFooter,
   Input,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownSection,
+  DropdownItem,
 } from "@nextui-org/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fas } from "@fortawesome/free-solid-svg-icons";
@@ -178,7 +183,7 @@ export default function ParkingPage({ params }) {
         </div>
         <div className="flex flex-col gap-4 my-2">
           <div className="flex justify-between items-center my-5">
-            <h1 className="text-3xl">Detail Parking Spot List</h1>
+            <h1 className="text-xl md:text-3xl">Detail Parking Spot List</h1>
             <div className="flex items-center gap-2">
               <Button
                 onPress={() => {
@@ -213,7 +218,7 @@ export default function ParkingPage({ params }) {
                   <TableCell>{item.floor}</TableCell>
                   <TableCell>{item.quantity}</TableCell>
                   <TableCell className="space-x-2">
-                    <Button
+                    {/* <Button
                       onPress={() => {
                         setAction("edit");
                         handleDetail(item._id);
@@ -243,7 +248,63 @@ export default function ParkingPage({ params }) {
                           color="white"
                         />
                       }
-                    ></Button>
+                    ></Button> */}
+
+                    <Dropdown>
+                      <DropdownTrigger>
+                        <Button
+                          isIconOnly
+                          variant="flat"
+                          startContent={
+                            <FontAwesomeIcon icon={fas.faEllipsis} />
+                          }
+                        ></Button>
+                      </DropdownTrigger>
+                      <DropdownMenu
+                        variant="faded"
+                        aria-label="Dropdown menu with description"
+                      >
+                        <DropdownSection title="Actions" showDivider>
+                          <DropdownItem
+                            onPress={() => {
+                              setAction("edit");
+                              handleDetail(item._id);
+                            }}
+                            key="edit"
+                            description="Allows you to edit the spot"
+                            startContent={
+                              <FontAwesomeIcon
+                                size="sm"
+                                icon={fas.faEdit}
+                                className="text-xl text-default-500 pointer-events-none flex-shrink-0"
+                              />
+                            }
+                          >
+                            Edit spot
+                          </DropdownItem>
+                        </DropdownSection>
+                        <DropdownSection title="Danger zone">
+                          <DropdownItem
+                            onPress={() => {
+                              handleDelete(item._id);
+                            }}
+                            key="delete"
+                            className="text-danger"
+                            color="danger"
+                            description="Permanently delete the spot"
+                            startContent={
+                              <FontAwesomeIcon
+                                size="sm"
+                                icon={fas.faTrash}
+                                className="text-xl text-default-500 pointer-events-none flex-shrink-0"
+                              />
+                            }
+                          >
+                            Delete spot
+                          </DropdownItem>
+                        </DropdownSection>
+                      </DropdownMenu>
+                    </Dropdown>
                   </TableCell>
                 </TableRow>
               ))}
