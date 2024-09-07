@@ -34,6 +34,7 @@ export default function HomePage() {
   const pathname = usePathname();
   const [selected, setSelected] = useState("photos");
   const [role, setRole] = useState("");
+  const [scanAction, setScanAction] = useState("");
 
   useEffect(() => {
     const checkCookie = () => {
@@ -273,6 +274,7 @@ export default function HomePage() {
                   <Button
                     onPress={() => {
                       onOpenScanQR();
+                      setScanAction("checkin");
                     }}
                     className="bg-green-500 text-white"
                     variant="flat"
@@ -284,7 +286,24 @@ export default function HomePage() {
                       />
                     }
                   >
-                    Scan QR
+                    Checkin
+                  </Button>
+                  <Button
+                    onPress={() => {
+                      onOpenScanQR();
+                      setScanAction("checkout");
+                    }}
+                    className="bg-red-500 text-white"
+                    variant="flat"
+                    startContent={
+                      <FontAwesomeIcon
+                        icon={fas.faQrcode}
+                        size="lg"
+                        color="white"
+                      />
+                    }
+                  >
+                    Checkout
                   </Button>
                 </div>
               </div>
@@ -710,7 +729,7 @@ export default function HomePage() {
               <ModalHeader className="flex flex-col gap-1">Scan QR</ModalHeader>
               <ModalBody>
                 {/* <QRCodeScanner onScanSuccess={handleScanSuccess} /> */}
-                <QRScannerComponent />
+                <QRScannerComponent actions={scanAction} />
               </ModalBody>
             </>
           )}

@@ -2,25 +2,27 @@ import React, { useEffect, useRef, useState } from "react";
 import QrScanner from "qr-scanner";
 import { CircularProgress } from "@nextui-org/react";
 
-const QRScannerComponent = () => {
+const QRScannerComponent = ({ actions }) => {
   const videoRef = useRef(null);
   const [scanResult, setScanResult] = useState(null);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingScan, setIsLoadingScan] = useState(false);
 
-  const getUserList = async (qrData) => {
+  const checkInOut = async (qrData) => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/users?role=${qrData}`);
+      const trxid = String(qrData);
+      const response = await fetch(`/api/trx/${trxid}/${actions}`, {
+        method: "PUT",
+      });
       const data = await response.json();
       if (data) setIsSuccess(true);
       setIsLoading(false);
-      console.log(qrData, data, "<<<< dari component");
     } catch (error) {
       setIsLoading(false);
       setIsSuccess(false);
-      console.error("Error fetching user list:", error);
+      console.error("Error fetching data:", error);
     }
   };
 
@@ -31,7 +33,7 @@ const QRScannerComponent = () => {
         setIsLoadingScan(true);
         const qrData = result.data; // ambil data hasil scan
         setScanResult(qrData);
-        if (qrData) await getUserList(qrData); // panggil fungsi dengan data hasil scan
+        if (qrData) await checkInOut(qrData); // panggil fungsi dengan data hasil scan
         setIsLoadingScan(false);
       },
       {
@@ -41,7 +43,8 @@ const QRScannerComponent = () => {
 
     qrScanner.start();
     return () => {
-      qrScanner.stop(); // berentiin scanner
+      qrScanner.destroy();
+      // qrScanner.stop(); // berentiin scanner
     };
   }, []);
 
