@@ -70,7 +70,7 @@ class ParkingSpotModels {
       .object({
         name: z.string().min(1, "is required"),
         address: z.string().min(1, "is required"),
-        imgUrl: z.string().min(1, "is required"),
+        // imgUrl: z.string().min(1, "is required"),
       })
       .safeParse({
         name,
@@ -87,13 +87,7 @@ class ParkingSpotModels {
     return "Success create parking spot";
   }
 
-  static async updateParkingSpot({
-    id,
-    name,
-    address,
-    imgUrl,
-    role,
-  }) {
+  static async updateParkingSpot({ id, name, address, imgUrl, role }) {
     if (role === "user") {
       let error = new Error();
       error.message = "Can not access, sorry";
@@ -104,7 +98,7 @@ class ParkingSpotModels {
       .object({
         name: z.string().min(1, "is required"),
         address: z.string().min(1, "is required"),
-        imgUrl: z.string().min(1, "is required"),
+        // imgUrl: z.string().min(1, "is required"),
       })
       .safeParse({
         name,
@@ -122,7 +116,6 @@ class ParkingSpotModels {
   }
 
   static async deleteParkingSpot({ id, authorId, role }) {
-
     if (role === "user") {
       let error = new Error();
       error.message = "Can not access, sorry";
