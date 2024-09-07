@@ -26,6 +26,7 @@ import { toast } from "react-toastify";
 import { deleteCookie } from "../actions";
 import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { CldUploadWidget } from "next-cloudinary";
 
 export default function HomePage() {
   const pathname = usePathname();
@@ -42,8 +43,6 @@ export default function HomePage() {
 
     checkCookie();
   }, [pathname]);
-  console.log(typeof role, role); // Pastikan ini mengembalikan 'string' dan bukan yang lain
-
   const router = useRouter();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const {
@@ -65,11 +64,7 @@ export default function HomePage() {
   const [parking, setParking] = useState({
     name: "",
     address: "",
-    imgUrl: "",
-    motorSpot: "",
-    carSpot: "",
-    motorFee: "",
-    carFee: "",
+    imgUrl: [],
   });
   const getData = async () => {
     const response = await fetch("/api/parkspot");
@@ -100,11 +95,7 @@ export default function HomePage() {
     setParking({
       name: "",
       address: "",
-      imgUrl: "",
-      motorSpot: "",
-      carSpot: "",
-      motorFee: "",
-      carFee: "",
+      imgUrl: [],
     });
   };
 
@@ -163,11 +154,7 @@ export default function HomePage() {
       // reset form
       parking.name = "";
       parking.address = "";
-      parking.imgUrl = "";
-      parking.motorSpot = "";
-      parking.carSpot = "";
-      parking.motorFee = "";
-      parking.carFee = "";
+      parking.imgUrl = [];
       await getData();
       setIsLoading(false);
       await toast.success("Success add parking spot");
@@ -223,6 +210,13 @@ export default function HomePage() {
       setIsLoading(false);
       toast.error(error.msg);
     }
+  };
+
+  const handleRemoveImage = (index) => {
+    setParking((prev) => ({
+      ...prev,
+      imgUrl: prev.imgUrl.filter((_, i) => i !== index),
+    }));
   };
   return (
     <>
@@ -283,7 +277,7 @@ export default function HomePage() {
                         <Image
                           isZoomed
                           className="w-[100px] h-[63px]"
-                          src={item.imgUrl}
+                          src={item.imgUrl[0]}
                           alt={item.name}
                         />
                       </TableCell>
@@ -588,19 +582,68 @@ export default function HomePage() {
                   onChange={handleChangeParking}
                   value={parking.address}
                 />
-                <Input
-                  isRequired
-                  label="Image"
-                  placeholder="Enter your image"
-                  type="text"
-                  variant="bordered"
-                  name="imgUrl"
-                  onChange={handleChangeParking}
-                  value={parking.imgUrl}
-                />
+                <div className="overflow-x-auto whitespace-nowrap border border-gray-300 p-3 rounded-lg">
+                  {parking.imgUrl.map((url, index) => (
+                    <div key={index} className="relative inline-block mr-2">
+                      <Image
+                        isZoomed
+                        width={140}
+                        height={140}
+                        alt={`Uploaded Image ${index + 1}`}
+                        src={url}
+                      />
+                      {action === "edit" && (
+                        <Button
+                          onPress={() => handleRemoveImage(index)}
+                          isIconOnly
+                          className="absolute top-1 right-1 z-10 bg-red-500 text-white rounded-full w-5 h-5"
+                          variant="flat"
+                          startContent={
+                            <FontAwesomeIcon
+                              icon={fas.faXmark}
+                              size="xs"
+                              color="white"
+                            />
+                          }
+                        ></Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <CldUploadWidget
+                  uploadPreset="parkmate"
+                  onSuccess={(result, { widget }) => {
+                    const secureUrl = result?.info?.secure_url;
+                    // multiple
+                    setParking((prev) => ({
+                      ...prev,
+                      imgUrl: [...prev.imgUrl, secureUrl],
+                    }));
+                  }}
+                >
+                  {({ open }) => {
+                    return (
+                      <Button
+                        type="submit"
+                        className="bg-black text-white"
+                        variant="flat"
+                        onPress={() => open()}
+                      >
+                        Upload an Image
+                      </Button>
+                    );
+                  }}
+                </CldUploadWidget>
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
+                <Button
+                  color="danger"
+                  variant="light"
+                  onPress={() => {
+                    onClose();
+                    setAction("");
+                  }}
+                >
                   Close
                 </Button>
                 {action === "add" ? (
