@@ -257,7 +257,7 @@ export default function HomePage() {
           <Tab key="parkingList" title="Parking Spot List">
             <div className="flex flex-col gap-4 my-2">
               <div className="flex flex-col gap-4 md:gap-0 md:flex-row justify-between md:items-center my-5">
-                <h1 className="text-3xl">Parking Spot List</h1>
+                <h1 className="text-xl md:text-3xl">Parking Spot List</h1>
                 <div className="flex items-center gap-2">
                   <Button
                     onPress={() => {
@@ -419,7 +419,7 @@ export default function HomePage() {
             >
               <div className="flex flex-col gap-4 my-2">
                 <div className="flex justify-between items-center my-5">
-                  <h1 className="text-3xl">Vendor List</h1>
+                  <h1 className="text-xl md:text-3xl">Vendor List</h1>
                   <div className="flex items-center gap-2">
                     {/* kalo role === admin */}
                     <Button
@@ -501,7 +501,7 @@ export default function HomePage() {
             >
               <div className="flex flex-col gap-4 my-2">
                 <div className="flex justify-between items-center my-5">
-                  <h1 className="text-3xl">User List</h1>
+                  <h1 className="text-xl md:text-3xl">User List</h1>
                 </div>
                 <Table aria-label="Example static collection table">
                   <TableHeader>
