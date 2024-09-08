@@ -274,7 +274,7 @@ export default function HomePage() {
                       />
                     }
                   >
-                    Add Parking Spot
+                    Spot
                   </Button>
                   <Button
                     onPress={() => {
@@ -323,7 +323,12 @@ export default function HomePage() {
                   {data.map((item) => (
                     <TableRow key={item._id}>
                       <TableCell>{item.name}</TableCell>
-                      <TableCell>{item.address}</TableCell>
+                      <TableCell>
+                        <div className="w-40 max-h-24 overflow-y-auto">
+                          <p>{item.address}</p>
+                        </div>
+                      </TableCell>
+
                       <TableCell>
                         <Image
                           isZoomed
