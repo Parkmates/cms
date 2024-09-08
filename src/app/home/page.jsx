@@ -23,6 +23,7 @@ import {
   DropdownMenu,
   DropdownSection,
   DropdownItem,
+  Spinner,
 } from "@nextui-org/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fas } from "@fortawesome/free-solid-svg-icons";
@@ -67,6 +68,7 @@ export default function HomePage() {
   const [vendor, setVendor] = useState([]);
   const [user, setUser] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(false);
   const [action, setAction] = useState("");
   const [formData, setFormData] = useState({
     name: "",
@@ -80,14 +82,28 @@ export default function HomePage() {
     imgUrl: [],
   });
   const getData = async () => {
-    const response = await fetch("/api/parkspot");
-    const data = await response.json();
-    setData(data);
+    try {
+      // setIsLoadingData(true);
+      const response = await fetch("/api/parkspot");
+      const data = await response.json();
+      setData(data);
+      // setIsLoadingData(false);
+    } catch (error) {
+      // setIsLoadingData(false);
+      toast.error(error.msg);
+    }
   };
   const getVendorList = async () => {
-    const response = await fetch("/api/users?role=vendor");
-    const data = await response.json();
-    setVendor(data);
+    try {
+      setIsLoadingData(true);
+      const response = await fetch("/api/users?role=vendor");
+      const data = await response.json();
+      setVendor(data);
+      setIsLoadingData(false);
+    } catch (error) {
+      setIsLoadingData(false);
+      toast.error(error.msg);
+    }
   };
   const getUserList = async () => {
     const response = await fetch("/api/users?role=user");
@@ -312,14 +328,17 @@ export default function HomePage() {
                   </Button>
                 </div>
               </div>
-              <Table aria-label="Example static collection table">
+              <Table isStriped aria-label="Example static collection table">
                 <TableHeader>
                   <TableColumn>NAME</TableColumn>
                   <TableColumn>ADDRESS</TableColumn>
                   <TableColumn>IMAGE</TableColumn>
                   <TableColumn>ACTIONS</TableColumn>
                 </TableHeader>
-                <TableBody>
+                <TableBody
+                  loadingContent={<Spinner />}
+                  loadingState={isLoadingData}
+                >
                   {data.map((item) => (
                     <TableRow key={item._id}>
                       <TableCell>{item.name}</TableCell>
@@ -443,7 +462,7 @@ export default function HomePage() {
                     </Button>
                   </div>
                 </div>
-                <Table aria-label="Example static collection table">
+                <Table isStriped aria-label="Example static collection table">
                   <TableHeader>
                     <TableColumn>NAME</TableColumn>
                     <TableColumn>USER NAME</TableColumn>
@@ -451,7 +470,10 @@ export default function HomePage() {
                     <TableColumn>ROLE</TableColumn>
                     {/* <TableColumn>ACTIONS</TableColumn> */}
                   </TableHeader>
-                  <TableBody>
+                  <TableBody
+                    loadingContent={<Spinner />}
+                    loadingState={isLoadingData}
+                  >
                     {vendor.map((item) => (
                       <TableRow key={item._id}>
                         <TableCell>{item.name}</TableCell>
@@ -508,7 +530,7 @@ export default function HomePage() {
                 <div className="flex justify-between items-center my-5">
                   <h1 className="text-xl md:text-3xl">User List</h1>
                 </div>
-                <Table aria-label="Example static collection table">
+                <Table isStriped aria-label="Example static collection table">
                   <TableHeader>
                     <TableColumn>NAME</TableColumn>
                     <TableColumn>USER NAME</TableColumn>

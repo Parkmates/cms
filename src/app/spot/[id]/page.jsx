@@ -211,7 +211,7 @@ export default function ParkingPage({ params }) {
               </Button>
             </div>
           </div>
-          <Table aria-label="Example static collection table">
+          <Table isStriped aria-label="Example static collection table">
             <TableHeader>
               <TableColumn>TYPE</TableColumn>
               <TableColumn>FEE</TableColumn>
