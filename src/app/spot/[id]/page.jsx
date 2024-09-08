@@ -19,6 +19,8 @@ import {
   DropdownMenu,
   DropdownSection,
   DropdownItem,
+  Select,
+  SelectItem,
 } from "@nextui-org/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fas } from "@fortawesome/free-solid-svg-icons";
@@ -70,11 +72,20 @@ export default function ParkingPage({ params }) {
   }, [action]);
   const handleChangeParking = (e) => {
     const { name, value } = e.target;
+
     setParking({
       ...parking,
       [name]: value,
     });
   };
+  const handleChangeType = (e) => {
+    const { currentKey } = e;
+    setParking((prevParking) => ({
+      ...prevParking,
+      type: currentKey,
+    }));
+  };
+
   const handleAddParking = async (e) => {
     e.preventDefault();
     try {
@@ -200,7 +211,7 @@ export default function ParkingPage({ params }) {
               </Button>
             </div>
           </div>
-          <Table aria-label="Example static collection table">
+          <Table isStriped aria-label="Example static collection table">
             <TableHeader>
               <TableColumn>TYPE</TableColumn>
               <TableColumn>FEE</TableColumn>
@@ -212,44 +223,12 @@ export default function ParkingPage({ params }) {
             <TableBody>
               {data?.spotList?.map((item) => (
                 <TableRow key={item._id}>
-                  <TableCell>{item.type}</TableCell>
+                  <TableCell className="capitalize">{item.type}</TableCell>
                   <TableCell>{item.fee}</TableCell>
                   <TableCell>{item.area}</TableCell>
                   <TableCell>{item.floor}</TableCell>
                   <TableCell>{item.quantity}</TableCell>
                   <TableCell className="space-x-2">
-                    {/* <Button
-                      onPress={() => {
-                        setAction("edit");
-                        handleDetail(item._id);
-                      }}
-                      isIconOnly
-                      className="bg-black text-white"
-                      variant="flat"
-                      startContent={
-                        <FontAwesomeIcon
-                          icon={fas.faEdit}
-                          size="md"
-                          color="white"
-                        />
-                      }
-                    ></Button>
-                    <Button
-                      onPress={() => {
-                        handleDelete(item._id);
-                      }}
-                      isIconOnly
-                      className="bg-red-500 text-white"
-                      variant="flat"
-                      startContent={
-                        <FontAwesomeIcon
-                          icon={fas.faTrash}
-                          size="md"
-                          color="white"
-                        />
-                      }
-                    ></Button> */}
-
                     <Dropdown>
                       <DropdownTrigger>
                         <Button
@@ -324,16 +303,18 @@ export default function ParkingPage({ params }) {
                 {action === "add" ? "Add" : "Edit"} detail parking spot
               </ModalHeader>
               <ModalBody>
-                <Input
-                  isRequired
-                  label="Type"
-                  placeholder="Enter parking type"
-                  type="text"
+                <Select
                   variant="bordered"
-                  name="type"
-                  onChange={handleChangeParking}
-                  value={parking.type}
-                />
+                  placeholder="Select type"
+                  label="Type"
+                  className="max-w-md"
+                  selectedKeys={[parking.type]}
+                  onSelectionChange={handleChangeType}
+                >
+                  <SelectItem key="car">Car</SelectItem>
+                  <SelectItem key="motorcycle">Motorcycle</SelectItem>
+                </Select>
+
                 <Input
                   isRequired
                   label="Fee"
