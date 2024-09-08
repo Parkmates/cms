@@ -3,12 +3,19 @@ const database = require("../config/mongodb");
 const { ObjectId } = require("mongodb");
 
 class ParkingSpotModels {
-  static async getAll({ role, authorId }) {
+  static async getAll({ role, authorId, name }) {
     let opt = {};
     if (role === "vendor") {
       opt = {
-        authorId: new ObjectId(String(authorId)),
+        $and: [{authorId: new ObjectId(String(authorId)),}]
       };
+    }
+
+    if (name) {
+      opt.name = {
+        $regex: name || "",
+        $options: "i"
+      }
     }
 
     const parkSpots = await database
