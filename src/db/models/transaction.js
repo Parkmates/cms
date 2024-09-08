@@ -30,8 +30,11 @@ class TransactionModels {
   static async createTransaction({ spotDetailId, userId }) {
     const spotValidate = await database.collection("transactions").findOne({
       $and: [
-        { spotId: new ObjectId(String(spotId)) },
+        // { spotDetailId: new ObjectId(String(spotDetailId)) },
+        // { userId: new ObjectId(String(userId)) },
+        { spotDetailId: new ObjectId(String(spotDetailId)) },
         { userId: new ObjectId(String(userId)) },
+        { isActive: true }
       ],
     });
     if (spotValidate) {
