@@ -36,7 +36,7 @@ class UserModels {
 
     const token = signToken({ id: String(user._id), role: user.role });
     cookies().set("Authorization", "Bearer " + token);
-
+    cookies().set("role", user.role);
     return token;
   }
 
@@ -83,7 +83,7 @@ class UserModels {
   static async addVendor({ name, username, email, password, userRole }) {
     if (userRole !== "admin") {
       let error = new Error();
-      error.message = "Unauthorized";
+      error.message = "Can not access, sorry";
       error.name = "unauthorized";
       throw error;
     }
@@ -98,6 +98,24 @@ class UserModels {
       })
       .safeParse({ name, username, email, password });
     if (!validation.success) throw validation.error;
+
+    // ? cek di db email udah ada atau belum
+    const existsEmail = await this.findByEmail(email);
+    if (existsEmail) {
+      let error = new Error();
+      error.message = "Email already exists";
+      error.name = "invalidEmail";
+      throw error;
+    }
+    // ? cek di db username udah ada atau belum
+    const existsUsername = await this.findByUsername(username);
+    if (existsUsername) {
+      let error = new Error();
+      error.message = "Username already exists";
+      error.name = "invalidUsername";
+      throw error;
+    }
+
     const user = await database.collection("users").insertOne({
       name,
       username,
@@ -112,7 +130,7 @@ class UserModels {
   static async getAll({ currentUserrole, role }) {
     if (currentUserrole !== "admin") {
       let error = new Error();
-      error.message = "Unauthorized";
+      error.message = "Can not access, sorry";
       error.name = "unauthorized";
       throw error;
     }
@@ -194,7 +212,12 @@ class UserModels {
   }
 
   static async deleteUser({ id, role }) {
-    if (role !== "admin") throw { name: "Unauthorized" };
+    if (role !== "admin") {
+      let error = new Error();
+      error.message = "Can not access, sorry";
+      error.name = "unauthorized";
+      throw error;
+    }
     const result = await database.collection("users").deleteOne({
       _id: new ObjectId(String(id)),
     });

@@ -1,4 +1,35 @@
 const ParkingSpotModels = require("@/db/models/parkingSpot");
+const { z } = require("zod");
+
+async function GET(req, res) {
+  try {
+    const { id, spotDetailId } = res.params;
+    const result = await ParkingSpotModels.getSpotDetailById({
+      id,
+      spotDetailId,
+    });
+    return Response.json(result);
+  } catch (error) {
+    let msgError = error.message || "Internal server error";
+    let status = 500;
+
+    if (error instanceof z.ZodError) {
+      msgError = error.errors[0].path[0] + " " + error.errors[0].message;
+      status = 400;
+    }
+    if (error.name === "unauthorized") {
+      status = 403;
+    }
+    return Response.json(
+      {
+        msg: msgError,
+      },
+      {
+        status: status,
+      }
+    );
+  }
+}
 
 async function PUT(req, res) {
   try {
@@ -26,8 +57,8 @@ async function PUT(req, res) {
       msgError = error.errors[0].path[0] + " " + error.errors[0].message;
       status = 400;
     }
-    if (error.name === "Unauthorized") {
-      status = 404
+    if (error.name === "unauthorized") {
+      status = 403;
     }
     return Response.json(
       {
@@ -51,7 +82,7 @@ async function DELETE(req, res) {
       role,
     });
 
-    return Response.json(result)
+    return Response.json(result);
   } catch (error) {
     let msgError = error.message || "Internal server error";
     let status = 500;
@@ -60,8 +91,8 @@ async function DELETE(req, res) {
       msgError = error.errors[0].path[0] + " " + error.errors[0].message;
       status = 400;
     }
-    if (error.name === "Unauthorized") {
-      status = 404
+    if (error.name === "unauthorized") {
+      status = 403;
     }
     return Response.json(
       {
@@ -75,6 +106,7 @@ async function DELETE(req, res) {
 }
 
 module.exports = {
+  GET,
   PUT,
   DELETE,
 };

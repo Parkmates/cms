@@ -1,20 +1,33 @@
 const TransactionModels = require("@/db/models/transaction");
+const { z } = require("zod");
 
-async function GET() {
+async function GET(req, res) {
   try {
     const userId = req.headers.get("x-id");
     const result = await TransactionModels.getAll(userId);
     return Response.json(result);
   } catch (error) {
-    console.log(error);
-    return Response.json(error);
+    let msgError = error.message || "Internal server error";
+    let status = 500;
+
+    if (error instanceof z.ZodError) {
+      msgError = error.errors[0].path[0] + " " + error.errors[0].message;
+      status = 400;
+    }
+    return Response.json(
+      {
+        msg: msgError,
+      },
+      {
+        status: status,
+      }
+    );
   }
 }
 
 async function POST(req) {
   try {
     const { spotDetailId } = await req.json();
-    // if (!spotId) throw { name: "ParkingSpotNotFound" };
 
     const userId = req.headers.get("x-id");
 
@@ -30,6 +43,10 @@ async function POST(req) {
 
     if (error.name === "AlreadyBookSpot") {
       status = 409;
+    }
+    if (error instanceof z.ZodError) {
+      msgError = error.errors[0].path[0] + " " + error.errors[0].message;
+      status = 400;
     }
     return Response.json(
       {

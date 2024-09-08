@@ -49,7 +49,6 @@ class ParkingSpotModels {
       .aggregate(agg)
       .toArray();
 
-    // if (!parkingSpot) throw { name: "ParkingSpotNotFound" };
     if (!parkingSpot) {
       let error = new Error();
       error.message = "Parking Spot NotFound";
@@ -62,7 +61,7 @@ class ParkingSpotModels {
   static async createParkingSpot({ name, address, imgUrl, authorId, role }) {
     if (role === "user") {
       let error = new Error();
-      error.message = "Unauthorized";
+      error.message = "Can not access, sorry";
       error.name = "unauthorized";
       throw error;
     }
@@ -71,7 +70,7 @@ class ParkingSpotModels {
       .object({
         name: z.string().min(1, "is required"),
         address: z.string().min(1, "is required"),
-        imgUrl: z.string().min(1, "is required"),
+        // imgUrl: z.string().min(1, "is required"),
       })
       .safeParse({
         name,
@@ -88,16 +87,10 @@ class ParkingSpotModels {
     return "Success create parking spot";
   }
 
-  static async updateParkingSpot({
-    id,
-    name,
-    address,
-    imgUrl,
-    role,
-  }) {
+  static async updateParkingSpot({ id, name, address, imgUrl, role }) {
     if (role === "user") {
       let error = new Error();
-      error.message = "Unauthorized";
+      error.message = "Can not access, sorry";
       error.name = "unauthorized";
       throw error;
     }
@@ -105,7 +98,7 @@ class ParkingSpotModels {
       .object({
         name: z.string().min(1, "is required"),
         address: z.string().min(1, "is required"),
-        imgUrl: z.string().min(1, "is required"),
+        // imgUrl: z.string().min(1, "is required"),
       })
       .safeParse({
         name,
@@ -123,10 +116,9 @@ class ParkingSpotModels {
   }
 
   static async deleteParkingSpot({ id, authorId, role }) {
-
     if (role === "user") {
       let error = new Error();
-      error.message = "Unauthorized";
+      error.message = "Can not access, sorry";
       error.name = "unauthorized";
       throw error;
     }
@@ -137,6 +129,20 @@ class ParkingSpotModels {
       ],
     });
     return { result: "Success delete parking spot" };
+  }
+
+  static async getSpotDetailById({ id, spotDetailId }) {
+    const spotDetail = await database.collection("spotDetails").findOne({
+      _id: new ObjectId(String(spotDetailId)),
+      parkingSpotId: new ObjectId(String(id)),
+    });
+
+    if (!spotDetail) {
+      let error = new Error();
+      error.message = "Spot Detail NotFound";
+      throw error;
+    }
+    return spotDetail;
   }
 
   static async createSpotDetail({
@@ -150,7 +156,7 @@ class ParkingSpotModels {
   }) {
     if (role === "user") {
       let error = new Error();
-      error.message = "Unauthorized";
+      error.message = "Can not access, sorry";
       error.name = "unauthorized";
       throw error;
     }
@@ -178,7 +184,7 @@ class ParkingSpotModels {
   }) {
     if (role === "user") {
       let error = new Error();
-      error.message = "Unauthorized";
+      error.message = "Can not access, sorry";
       error.name = "unauthorized";
       throw error;
     }
@@ -198,7 +204,7 @@ class ParkingSpotModels {
   static async deleteSpotDetail({ id, spotDetailId, role }) {
     if (role === "user") {
       let error = new Error();
-      error.message = "Unauthorized";
+      error.message = "Can not access, sorry";
       error.name = "unauthorized";
       throw error;
     }

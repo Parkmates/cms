@@ -4,4 +4,5 @@ import { cookies } from "next/headers";
 
 export async function deleteCookie() {
   cookies().delete("Authorization");
+  cookies().delete("role");
 }

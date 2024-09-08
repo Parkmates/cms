@@ -1,5 +1,5 @@
 // const midtransClient = require("midtrans-client");
-const Midtrans = require('midtrans-client');
+const Midtrans = require("midtrans-client");
 // Create Snap API instance
 let snap = new Midtrans.Snap({
   isProduction: false,
@@ -8,23 +8,27 @@ let snap = new Midtrans.Snap({
 });
 
 async function POST(req) {
+  const { trxId, type, amount } = await req.json();
   try {
-    let parameter = {
-      transaction_details: {
-        order_id: "test-transaction-5",
-        gross_amount: 200000,
-      },
-      item_details: {
-        name: 'Booking Fee',
-        price: 200000,
-        quantity: 1
-      },
-    };
+    if (type === "booking") {
+      let parameter = {
+        transaction_details: {
+          order_id: `Booking-${trxId}`,
+          gross_amount: amount,
+        },
+        item_details: {
+          name: "Booking Fee",
+          price: amount,
+          quantity: 1,
+        },
+      };
 
-    const url = await snap.createTransaction(parameter);
-    console.log(url);
+      const url = await snap.createTransaction(parameter);
+      // console.log(url);
 
-    return Response.json({ url: url });
+      return Response.json({ paymentUrl: url });
+      // return Response.json({ id: trxId });
+    }
   } catch (error) {
     console.log(error);
     return Response.json({ msg: error.message });
