@@ -15,6 +15,9 @@ async function PUT(req, res) {
     if (error.name === "CheckinFailed") {
       status = 409;
     }
+    if (error.name === "alreadyCheckIn") {
+      status = 409;
+    }
     if (error instanceof z.ZodError) {
       msgError = error.errors[0].path[0] + " " + error.errors[0].message;
       status = 400;
