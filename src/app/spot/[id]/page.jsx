@@ -41,9 +41,9 @@ export default function ParkingPage({ params }) {
   const [action, setAction] = useState("");
   const [parking, setParking] = useState({
     area: "",
-    fee: "",
+    fee: 0,
     floor: "",
-    quantity: "",
+    quantity: 0,
     type: "",
   });
   const getData = async () => {
@@ -60,9 +60,9 @@ export default function ParkingPage({ params }) {
 
     setParking({
       area: "",
-      fee: "",
+      fee: 0,
       floor: "",
-      quantity: "",
+      quantity: 0,
       type: "",
     });
   };
@@ -90,6 +90,8 @@ export default function ParkingPage({ params }) {
     e.preventDefault();
     try {
       console.log(parking);
+      parking.fee = parseInt(parking.fee);
+      parking.quantity = parseInt(parking.quantity);
       setIsLoading(true);
       const response = await fetch(`/api/parkspot/${params.id}`, {
         method: "POST",
@@ -102,9 +104,9 @@ export default function ParkingPage({ params }) {
 
       // reset form
       parking.area = "";
-      parking.fee = "";
+      parking.fee = 0;
       parking.floor = "";
-      parking.quantity = "";
+      parking.quantity = 0;
       parking.type = "";
       await getData();
       setIsLoading(false);
@@ -119,6 +121,10 @@ export default function ParkingPage({ params }) {
     e.preventDefault();
     try {
       setIsLoading(true);
+
+      parking.fee = parseInt(parking.fee);
+      parking.quantity = parseInt(parking.quantity);
+
       const response = await fetch(
         `/api/parkspot/${params.id}/${parking._id}`,
         {
@@ -339,7 +345,7 @@ export default function ParkingPage({ params }) {
                   isRequired
                   label="Floor"
                   placeholder="Enter your floor"
-                  type="text"
+                  type="number"
                   variant="bordered"
                   name="floor"
                   onChange={handleChangeParking}
