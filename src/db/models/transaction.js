@@ -56,7 +56,7 @@ class TransactionModels {
     }
     const type = spotDetail.type;
 
-    await database.collection("transactions").insertOne({
+    const data = await database.collection("transactions").insertOne({
       userId: new ObjectId(String(userId)),
       spotDetailId: new ObjectId(String(spotDetailId)),
       status: "booking pending",
@@ -67,7 +67,8 @@ class TransactionModels {
       CheckoutAt: "",
       createdAt: new Date(),
     });
-    return "Transaction success";
+    
+    return data.insertedId;
   }
 
   static async checkInTransaction({ id, userId }) {
