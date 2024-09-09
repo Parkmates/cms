@@ -184,7 +184,9 @@ class TransactionModels {
   }
 
   static async checkOutTransaction({ id, userId }) {
-    const trx = await database.collection("transactions").findOne({ _id: new ObjectId(String(id)) })
+    const trx = await database
+      .collection("transactions")
+      .findOne({ _id: new ObjectId(String(id)) });
 
     await database.collection("spotDetails").updateOne(
       {
@@ -229,7 +231,9 @@ class TransactionModels {
       throw error;
     }
 
-    const trx = await database.collection("transactions").findOne({ _id: new ObjectId(String(id)) })
+    const trx = await database
+      .collection("transactions")
+      .findOne({ _id: new ObjectId(String(id)) });
 
     await database.collection("spotDetails").updateOne(
       {
