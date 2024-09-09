@@ -7,34 +7,38 @@ class TransactionModels {
       .collection("transactions")
       .aggregate([
         {
-          '$match': {
-            'userId': new ObjectId('66da78f579aaba56438e1266')
-          }
-        }, {
-          '$lookup': {
-            'from': 'parkingSpots',
-            'localField': 'spotId',
-            'foreignField': 'id',
-            'as': 'parkingSpotData'
-          }
-        }, {
-          '$unwind': {
-            'path': '$parkingSpotData',
-            'preserveNullAndEmptyArrays': true
-          }
-        }, {
-          '$lookup': {
-            'from': 'spotDetails',
-            'localField': 'spotId',
-            'foreignField': 'spotId',
-            'as': 'spotDetailsData'
-          }
-        }, {
-          '$unwind': {
-            'path': '$spotDetailsData',
-            'preserveNullAndEmptyArrays': true
-          }
-        }
+          $match: {
+            userId: new ObjectId("66da78f579aaba56438e1266"),
+          },
+        },
+        {
+          $lookup: {
+            from: "parkingSpots",
+            localField: "spotId",
+            foreignField: "id",
+            as: "parkingSpotData",
+          },
+        },
+        {
+          $unwind: {
+            path: "$parkingSpotData",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $lookup: {
+            from: "spotDetails",
+            localField: "spotId",
+            foreignField: "spotId",
+            as: "spotDetailsData",
+          },
+        },
+        {
+          $unwind: {
+            path: "$spotDetailsData",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
       ])
       .toArray();
 
@@ -63,7 +67,7 @@ class TransactionModels {
       $and: [
         { spotDetailId: new ObjectId(String(spotDetailId)) },
         { userId: new ObjectId(String(userId)) },
-        { status: "booking pending" },
+        { status: "bookingPending" },
       ],
     });
 
@@ -107,7 +111,7 @@ class TransactionModels {
     const data = await database.collection("transactions").insertOne({
       userId: new ObjectId(String(userId)),
       spotDetailId: new ObjectId(String(spotDetailId)),
-      status: "booking pending",
+      status: "bookingPending",
       paymentUrl: "",
       bookingFee: type === "car" ? 10000 : 5000,
       paymentFee: 0,
@@ -150,7 +154,9 @@ class TransactionModels {
   }
 
   static async checkOutTransaction({ id, userId }) {
-    const trx = await database.collection("transactions").findOne({ _id: new ObjectId(String(id)) })
+    const trx = await database
+      .collection("transactions")
+      .findOne({ _id: new ObjectId(String(id)) });
 
     await database.collection("spotDetails").updateOne(
       {
@@ -166,7 +172,7 @@ class TransactionModels {
         _id: new ObjectId(String(id)),
       },
       {
-        $set: { status: "checkout successfull", checkoutAt: new Date() },
+        $set: { status: "checkoutSuccessfull", checkoutAt: new Date() },
       }
     );
     if (!transaction.modifiedCount) {
@@ -195,7 +201,9 @@ class TransactionModels {
       throw error;
     }
 
-    const trx = await database.collection("transactions").findOne({ _id: new ObjectId(String(id)) })
+    const trx = await database
+      .collection("transactions")
+      .findOne({ _id: new ObjectId(String(id)) });
 
     await database.collection("spotDetails").updateOne(
       {
@@ -212,11 +220,11 @@ class TransactionModels {
   static async updateStatus({ id, type, amount = 0 }) {
     let status = "";
     if (type === "bookingPaymentSuccess") {
-      status = "booking successfull";
+      status = "bookingSuccessfull";
     } else if (type === "failed") {
       status = "failed";
     } else if (type === "paymentSuccess") {
-      status = "checkout pending";
+      status = "checkoutPending";
     }
 
     const trx = await database.collection("transactions").findOne({
