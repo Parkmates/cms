@@ -48,12 +48,6 @@ class TransactionModels {
   static async getById({ id, userId }) {
     const transaction = await database
       .collection("transactions")
-      // .findOne({
-      //   $and: [
-      //     { _id: new ObjectId(String(id)) },
-      //     { userId: new ObjectId(String(userId)) },
-      //   ],
-      // });
       .aggregate([
         {
           $match: {
