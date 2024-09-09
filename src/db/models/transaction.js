@@ -30,8 +30,9 @@ class TransactionModels {
   static async createTransaction({ spotDetailId, userId }) {
     const spotValidate = await database.collection("transactions").findOne({
       $and: [
-        // { spotId: new ObjectId(String(spotId)) },
+        { spotDetailId: new ObjectId(String(spotDetailId)) },
         { userId: new ObjectId(String(userId)) },
+        { isActive: true }
       ],
     });
     if (spotValidate) {
@@ -120,6 +121,42 @@ class TransactionModels {
       throw error;
     }
     return "Cancel Success";
+  }
+
+  static async updateStatus({ id, type }) {
+    let status = "";
+    if(type === 'bookingPaymentSuccess'){
+      status = "booking successfull"
+    }else if( type === 'failed' ){
+      status = 'failed'
+    }else if( type === 'paymentSuccess'){
+      status = "checkout pending"
+    }
+
+    const trx = await database.collection("transactions").findOne({
+      _id: new ObjectId(String(id)),
+    });
+    if (trx) {
+      let error = new Error();
+      error.message = "transaction not found";
+      throw error;
+    }
+
+    const transaction = await database.collection("transactions").updateOne(
+      {
+        _id: new ObjectId(String(id)),
+      },
+      {
+        $set: { status: status},
+      }
+    );
+    if (!transaction.modifiedCount) {
+      let error = new Error();
+      error.message = "cb midtrans failed";
+      error.name = "cbMidtransFailed";
+      throw error;
+    }
+    return "ok";
   }
 }
 

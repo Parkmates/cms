@@ -28,6 +28,23 @@ async function POST(req) {
 
       return Response.json({ paymentUrl: url });
       // return Response.json({ id: trxId });
+    } else if (type === "payment") {
+      let parameter = {
+        transaction_details: {
+          order_id: `Payment-${trxId}`,
+          gross_amount: amount,
+        },
+        item_details: {
+          name: "Payment Fee",
+          price: amount,
+          quantity: 1,
+        },
+      };
+
+      const url = await snap.createTransaction(parameter);
+      // console.log(url);
+
+      return Response.json({ paymentUrl: url });
     }
   } catch (error) {
     console.log(error);
