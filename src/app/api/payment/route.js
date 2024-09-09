@@ -3,8 +3,8 @@ const Midtrans = require("midtrans-client");
 // Create Snap API instance
 let snap = new Midtrans.Snap({
   isProduction: false,
-  serverKey: "SB-Mid-server-_twRyfjOKtn1sy_TU0m1SJJh",
-  clientKey: "SB-Mid-client-s68Dh9ROaQnw5Ft9",
+  serverKey: process.env.MIDTRANS_SERVER_KEY,
+  clientKey: process.env.MIDTRANS_CLIENT_KEY,
 });
 
 async function POST(req) {

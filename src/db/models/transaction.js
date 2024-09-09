@@ -142,7 +142,7 @@ class TransactionModels {
     return "Cancel Success";
   }
 
-  static async updateStatus({ id, type }) {
+  static async updateStatus({ id, type, amount }) {
     let status = "";
     if(type === 'bookingPaymentSuccess'){
       status = "booking successfull"
@@ -155,7 +155,7 @@ class TransactionModels {
     const trx = await database.collection("transactions").findOne({
       _id: new ObjectId(String(id)),
     });
-    if (trx) {
+    if (!trx) {
       let error = new Error();
       error.message = "transaction not found";
       throw error;
@@ -166,7 +166,7 @@ class TransactionModels {
         _id: new ObjectId(String(id)),
       },
       {
-        $set: { status: status},
+        $set: { status: status, paymentFee: Number(trx.paymentFee) + Number(amount)},
       }
     );
     if (!transaction.modifiedCount) {
