@@ -178,7 +178,7 @@ class TransactionModels {
     return "Cancel Success";
   }
 
-  static async updateStatus({ id, type, amount }) {
+  static async updateStatus({ id, type, amount = 0 }) {
     let status = "";
     if (type === "bookingPaymentSuccess") {
       status = "booking successfull";
