@@ -7,15 +7,15 @@ class ParkingSpotModels {
     let opt = {};
     if (role === "vendor") {
       opt = {
-        $and: [{authorId: new ObjectId(String(authorId)),}]
+        $and: [{ authorId: new ObjectId(String(authorId)) }],
       };
     }
 
     if (name) {
       opt.name = {
         $regex: name || "",
-        $options: "i"
-      }
+        $options: "i",
+      };
     }
 
     const parkSpots = await database
@@ -224,6 +224,51 @@ class ParkingSpotModels {
     });
 
     return "Success delete spot detail";
+  }
+
+  static async getBestParkSpot() {
+    const agg = [
+      {
+        $lookup: {
+          from: "reviews",
+          localField: "_id",
+          foreignField: "spotId",
+          as: "reviews",
+        },
+      },
+      {
+        $addFields: {
+          ratingList: "$reviews.rating",
+        },
+      },
+      {
+        $addFields: {
+          totalRating: {
+            $sum: "$ratingList",
+          },
+        },
+      },
+      {
+        $sort: {
+          totalRating: -1,
+        },
+      },
+      {
+        $limit: 3,
+      },
+      {
+        $project: {
+          ratingList: 0,
+        },
+      },
+    ];
+    
+    const result = await database
+      .collection("parkingSpots")
+      .aggregate(agg)
+      .toArray();
+
+    return result;
   }
 }
 
