@@ -1,12 +1,13 @@
 const ParkingSpotModels = require("@/db/models/parkingSpot");
 const { z } = require("zod");
 
-async function GET(req) {
+async function GET(req, res) {
   try {
     const role = req.headers.get("x-role");
     const authorId = req.headers.get("x-id");
+    const name = req.nextUrl.searchParams.get("name")
 
-    const result = await ParkingSpotModels.getAll({ role, authorId });
+    const result = await ParkingSpotModels.getAll({ role, authorId, name });
     return Response.json(result);
   } catch (error) {
     let msgError = error.message || "Internal server error";
