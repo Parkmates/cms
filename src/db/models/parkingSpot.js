@@ -34,12 +34,12 @@ class ParkingSpotModels {
       },
       ...(role === "vendor"
         ? [
-            {
-              $match: {
-                authorId: new ObjectId(String(authorId)),
-              },
+          {
+            $match: {
+              authorId: new ObjectId(String(authorId)),
             },
-          ]
+          },
+        ]
         : []),
       {
         $lookup: {
@@ -49,6 +49,14 @@ class ParkingSpotModels {
           as: "spotList",
         },
       },
+      {
+        $lookup: {
+          from: "reviews",
+          localField: "_id",
+          foreignField: "spotId",
+          as: "reviews"
+        },
+      }
     ];
 
     const parkingSpot = await database
@@ -262,7 +270,7 @@ class ParkingSpotModels {
         },
       },
     ];
-    
+
     const result = await database
       .collection("parkingSpots")
       .aggregate(agg)
