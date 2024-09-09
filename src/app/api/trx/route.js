@@ -41,8 +41,11 @@ async function POST(req) {
     let msgError = error.message || "Internal server error";
     let status = 500;
 
-    if (error.name === "AlreadyBookSpot") {
+    if (error.name === "AlreadyBookSpot" || "FullBooked") {
       status = 409;
+    }
+    if (error.name === "NotFound") {
+      status = 404;
     }
     if (error instanceof z.ZodError) {
       msgError = error.errors[0].path[0] + " " + error.errors[0].message;

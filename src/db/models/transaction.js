@@ -52,6 +52,7 @@ class TransactionModels {
     if (!spotDetail) {
       let error = new Error();
       error.message = "Spot Not Found";
+      error.name = "NotFound";
       throw error;
     }
     const type = spotDetail.type;
@@ -59,6 +60,7 @@ class TransactionModels {
     if(spotDetail.quantity == 0) {
       let error = new Error();
       error.message = "Full Booked";
+      error.name = "FullBooked";
       throw error;
     }
 
@@ -96,6 +98,7 @@ class TransactionModels {
     if (trx.status === "parking") {
       let error = new Error();
       error.message = "Already Checkin";
+      error.name = "alreadyCheckIn";
       throw error;
     }
 
