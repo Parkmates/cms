@@ -24,6 +24,10 @@ async function POST(req) {
       };
 
       const url = await snap.createTransaction(parameter);
+      await TransactionModels.updatePaymentUrl({
+        id: trxId,
+        url: url.redirect_url,
+      });
       // console.log(url);
 
       return Response.json({ paymentUrl: url });

@@ -138,12 +138,12 @@ class TransactionModels {
 
   static async updateStatus({ id, type, amount }) {
     let status = "";
-    if(type === 'bookingPaymentSuccess'){
-      status = "booking successfull"
-    }else if( type === 'failed' ){
-      status = 'failed'
-    }else if( type === 'paymentSuccess'){
-      status = "checkout pending"
+    if (type === "bookingPaymentSuccess") {
+      status = "booking successfull";
+    } else if (type === "failed") {
+      status = "failed";
+    } else if (type === "paymentSuccess") {
+      status = "checkout pending";
     }
 
     const trx = await database.collection("transactions").findOne({
@@ -160,13 +160,43 @@ class TransactionModels {
         _id: new ObjectId(String(id)),
       },
       {
-        $set: { status: status, paymentFee: Number(trx.paymentFee) + Number(amount)},
+        $set: {
+          status: status,
+          paymentFee: Number(trx.paymentFee) + Number(amount),
+        },
       }
     );
     if (!transaction.modifiedCount) {
       let error = new Error();
       error.message = "cb midtrans failed";
       error.name = "cbMidtransFailed";
+      throw error;
+    }
+    return "ok";
+  }
+
+  static async updatePaymentUrl({ id, url }) {
+    const trx = await database.collection("transactions").findOne({
+      _id: new ObjectId(String(id)),
+    });
+    if (!trx) {
+      let error = new Error();
+      error.message = "transaction not found";
+      throw error;
+    }
+
+    const transaction = await database.collection("transactions").updateOne(
+      {
+        _id: new ObjectId(String(id)),
+      },
+      {
+        $set: { paymentUrl: url },
+      }
+    );
+    if (!transaction.modifiedCount) {
+      let error = new Error();
+      error.message = "Failed";
+      error.name = "Failed";
       throw error;
     }
     return "ok";
