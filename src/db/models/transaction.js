@@ -10,6 +10,64 @@ class TransactionModels {
           '$match': {
             'userId': new ObjectId(String(userId))
           }
+        },
+        {
+          '$lookup': {
+            'from': 'parkingSpots',
+            'localField': 'spotId',
+            'foreignField': 'id',
+            'as': 'parkingSpotData'
+          }
+        }, {
+          '$unwind': {
+            'path': '$parkingSpotData',
+            'preserveNullAndEmptyArrays': true
+          }
+        }, {
+          '$lookup': {
+            'from': 'spotDetails',
+            'localField': 'spotId',
+            'foreignField': 'spotId',
+            'as': 'spotDetailsData'
+          }
+        },
+        {
+          '$unwind': {
+            'path': '$spotDetailsData',
+            'preserveNullAndEmptyArrays': true
+          }
+        },
+        {
+          '$group': {
+            '_id': '$_id',
+            'transactionData': {
+              '$first': '$$ROOT'
+            }
+          }
+        },
+        {
+          '$replaceRoot': { 'newRoot': '$transactionData' }
+        }
+      ])
+      .toArray();
+
+    return transactions;
+  }
+
+  static async getById({ id, userId }) {
+    const transaction = await database.collection("transactions")
+      // .findOne({
+      //   $and: [
+      //     { _id: new ObjectId(String(id)) },
+      //     { userId: new ObjectId(String(userId)) },
+      //   ],
+      // });
+      .aggregate([
+        {
+          '$match': {
+            '_id': new ObjectId(new ObjectId(String(id))),
+            'userId': new ObjectId(new ObjectId(String(userId)))
+          }
         }, {
           '$lookup': {
             'from': 'parkingSpots',
@@ -34,51 +92,17 @@ class TransactionModels {
             'path': '$spotDetailsData',
             'preserveNullAndEmptyArrays': true
           }
-        }
-      ])
-      .toArray();
-
-    return transactions;
-  }
-
-  static async getById({ id, userId }) {
-    const transaction = await database.collection("transactions")
-      // .findOne({
-      //   $and: [
-      //     { _id: new ObjectId(String(id)) },
-      //     { userId: new ObjectId(String(userId)) },
-      //   ],
-      // });
-      .aggregate([
+        },
         {
-          '$match': {
-            '_id': new ObjectId(new ObjectId(String(id))), 
-            'userId': new ObjectId(new ObjectId(String(userId)))
+          '$group': {
+            '_id': '$_id',
+            'transactionData': {
+              '$first': '$$ROOT'
+            }
           }
-        }, {
-          '$lookup': {
-            'from': 'parkingSpots', 
-            'localField': 'spotId', 
-            'foreignField': 'id', 
-            'as': 'parkingSpotData'
-          }
-        }, {
-          '$unwind': {
-            'path': '$parkingSpotData', 
-            'preserveNullAndEmptyArrays': true
-          }
-        }, {
-          '$lookup': {
-            'from': 'spotDetails', 
-            'localField': 'spotId', 
-            'foreignField': 'spotId', 
-            'as': 'spotDetailsData'
-          }
-        }, {
-          '$unwind': {
-            'path': '$spotDetailsData', 
-            'preserveNullAndEmptyArrays': true
-          }
+        },
+        {
+          '$replaceRoot': { 'newRoot': '$transactionData' }
         }
       ])
       .toArray();
