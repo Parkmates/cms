@@ -34,20 +34,39 @@ class TransactionModels {
         // { userId: new ObjectId(String(userId)) },
         { spotDetailId: new ObjectId(String(spotDetailId)) },
         { userId: new ObjectId(String(userId)) },
-        { isActive: true }
+        { status: "booking pending" },
       ],
     });
+
     if (spotValidate) {
       let error = new Error();
       error.message = "Already BookSpot";
       error.name = "AlreadyBookSpot";
       throw error;
     }
-    const result = await database.collection("transactions").insertOne({
+
+    // cari spot detail untuk ambil type nya
+    // jadi mobile gausah kirim type kendaraan nya
+    const spotDetail = await database.collection("spotDetails").findOne({
+      _id: new ObjectId(String(spotDetailId)),
+    });
+
+    if (!spotDetail) {
+      let error = new Error();
+      error.message = "Spot Not Found";
+      throw error;
+    }
+    const type = spotDetail.type;
+
+    await database.collection("transactions").insertOne({
       userId: new ObjectId(String(userId)),
       spotDetailId: new ObjectId(String(spotDetailId)),
-      isActive: true,
-      isCheckin: false,
+      status: "booking pending",
+      paymentUrl: "",
+      bookingFee: type === "car" ? 10000 : 5000,
+      paymentFee: 0,
+      CheckinAt: "",
+      CheckoutAt: "",
       createdAt: new Date(),
     });
     return "Transaction success";
