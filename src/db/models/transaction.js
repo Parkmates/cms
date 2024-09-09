@@ -56,6 +56,21 @@ class TransactionModels {
     }
     const type = spotDetail.type;
 
+    if(spotDetail.quantity == 0) {
+      let error = new Error();
+      error.message = "Full Booked";
+      throw error;
+    }
+
+    await database.collection("spotDetails").updateOne(
+      {
+        _id: new ObjectId(String(spotDetailId)),
+      },
+      {
+        $inc: { quantity: -1 },
+      }
+    );
+
     const data = await database.collection("transactions").insertOne({
       userId: new ObjectId(String(userId)),
       spotDetailId: new ObjectId(String(spotDetailId)),
@@ -63,8 +78,8 @@ class TransactionModels {
       paymentUrl: "",
       bookingFee: type === "car" ? 10000 : 5000,
       paymentFee: 0,
-      CheckinAt: "",
-      CheckoutAt: "",
+      checkoutAt: "",
+      checkinAt: "",
       createdAt: new Date(),
     });
     
@@ -89,7 +104,7 @@ class TransactionModels {
         _id: new ObjectId(String(id)),
       },
       {
-        $set: { status: "parking" },
+        $set: { status: "parking", checkinAt: new Date() },
       }
     );
     if (!transaction.modifiedCount) {
@@ -101,12 +116,23 @@ class TransactionModels {
   }
 
   static async checkOutTransaction({ id, userId }) {
+    const trx = await database.collection("transactions").findOne({_id: new ObjectId(String(id))})
+
+    await database.collection("spotDetails").updateOne(
+      {
+        _id: new ObjectId(String(trx.spotDetailId)),
+      },
+      {
+        $inc: { quantity: +1 },
+      }
+    );
+
     const transaction = await database.collection("transactions").updateOne(
       {
         _id: new ObjectId(String(id)),
       },
       {
-        $set: { status: "checkout successfull" },
+        $set: { status: "checkout successfull", checkoutAt: new Date() },
       }
     );
     if (!transaction.modifiedCount) {
