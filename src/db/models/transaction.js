@@ -7,34 +7,38 @@ class TransactionModels {
       .collection("transactions")
       .aggregate([
         {
-          '$match': {
-            'userId': new ObjectId(String(userId))
-          }
-        }, {
-          '$lookup': {
-            'from': 'parkingSpots', 
-            'localField': 'spotId', 
-            'foreignField': 'id', 
-            'as': 'parkingSpotData'
-          }
-        }, {
-          '$unwind': {
-            'path': '$parkingSpotData', 
-            'preserveNullAndEmptyArrays': true
-          }
-        }, {
-          '$lookup': {
-            'from': 'spotDetails', 
-            'localField': 'spotId', 
-            'foreignField': 'spotId', 
-            'as': 'spotDetailsData'
-          }
-        }, {
-          '$unwind': {
-            'path': '$spotDetailsData', 
-            'preserveNullAndEmptyArrays': true
-          }
-        }
+          $match: {
+            userId: new ObjectId(String(userId)),
+          },
+        },
+        {
+          $lookup: {
+            from: "spotDetails",
+            localField: "spotDetailId",
+            foreignField: "_id",
+            as: "spotDetail",
+          },
+        },
+        {
+          $unwind: {
+            path: "$spotDetail",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $lookup: {
+            from: "parkingSpots",
+            localField: "spotDetail.parkingSpotId",
+            foreignField: "_id",
+            as: "parkingSpot",
+          },
+        },
+        {
+          $unwind: {
+            path: "$parkingSpot",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
       ])
       .toArray();
 
@@ -53,32 +57,32 @@ class TransactionModels {
         },
         {
           $lookup: {
-            from: "parkingSpots",
-            localField: "spotId",
-            foreignField: "id",
-            as: "parkingSpotData",
+            from: "spotDetails",
+            localField: "spotDetailId",
+            foreignField: "_id",
+            as: "spotDetail",
           },
         },
         {
           $unwind: {
-            path: "$parkingSpotData",
+            path: "$spotDetail",
             preserveNullAndEmptyArrays: true,
           },
         },
         {
           $lookup: {
-            from: "spotDetails",
-            localField: "spotId",
-            foreignField: "spotId",
-            as: "spotDetailsData",
+            from: "parkingSpots",
+            localField: "spotDetail.parkingSpotId",
+            foreignField: "_id",
+            as: "parkingSpot",
           },
         },
         {
           $unwind: {
-            path: "$spotDetailsData",
+            path: "$parkingSpot",
             preserveNullAndEmptyArrays: true,
           },
-        }
+        },
       ])
       .toArray();
     if (!transaction) {
