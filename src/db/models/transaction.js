@@ -63,42 +63,31 @@ class TransactionModels {
         },
         {
           $lookup: {
-            from: "parkingSpots",
-            localField: "spotId",
-            foreignField: "id",
-            as: "parkingSpotData",
+            from: "spotDetails",
+            localField: "spotDetailId",
+            foreignField: "_id",
+            as: "spotDetail",
           },
         },
         {
           $unwind: {
-            path: "$parkingSpotData",
+            path: "$spotDetail",
             preserveNullAndEmptyArrays: true,
           },
         },
         {
           $lookup: {
-            from: "spotDetails",
-            localField: "spotId",
-            foreignField: "spotId",
-            as: "spotDetailsData",
+            from: "parkingSpots",
+            localField: "spotDetail.parkingSpotId",
+            foreignField: "_id",
+            as: "parkingSpot",
           },
         },
         {
           $unwind: {
-            path: "$spotDetailsData",
+            path: "$parkingSpot",
             preserveNullAndEmptyArrays: true,
           },
-        },
-        {
-          $group: {
-            _id: "$_id",
-            transactionData: {
-              $first: "$$ROOT",
-            },
-          },
-        },
-        {
-          $replaceRoot: { newRoot: "$transactionData" },
         },
       ])
       .toArray();
