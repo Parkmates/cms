@@ -73,11 +73,13 @@ class TransactionModels {
   }
 
   static async checkInTransaction({ id, userId }) {
-    // kita cek dulu status isCheckin nya, kalo true, berarti gausah checkin lagi
-    const status = await database.collection("transactions").findOne({
+    // kita cek dulu status nya, kalo "parking",
+    // berarti gausah checkin lagi
+    // jadi kalo ada user yang nakal, mau checkin pake qr code yang sama, gabisa
+    const trx = await database.collection("transactions").findOne({
       _id: new ObjectId(String(id)),
     });
-    if (status.isCheckin) {
+    if (trx.status === "parking") {
       let error = new Error();
       error.message = "Already Checkin";
       throw error;
@@ -88,7 +90,7 @@ class TransactionModels {
         _id: new ObjectId(String(id)),
       },
       {
-        $set: { isCheckin: true },
+        $set: { status: "parking" },
       }
     );
     if (!transaction.modifiedCount) {
@@ -100,21 +102,12 @@ class TransactionModels {
   }
 
   static async checkOutTransaction({ id, userId }) {
-    const status = await database.collection("transactions").findOne({
-      _id: new ObjectId(String(id)),
-    });
-    if (!status.isCheckin) {
-      let error = new Error();
-      error.message = "You haven't checked in";
-      throw error;
-    }
-
     const transaction = await database.collection("transactions").updateOne(
       {
         _id: new ObjectId(String(id)),
       },
       {
-        $set: { isActive: false, isCheckin: false },
+        $set: { status: "checkout successfull" },
       }
     );
     if (!transaction.modifiedCount) {
@@ -127,6 +120,7 @@ class TransactionModels {
   }
 
   static async cancelTransaction({ id, userId }) {
+    // kalo user mau cancel, status nya jadi apa?
     const transaction = await database.collection("transactions").updateOne(
       {
         _id: new ObjectId(String(id)),
