@@ -13,7 +13,7 @@ class ReviewModels {
     static async createReview({ spotId, rating, comment, userId }) {
         const validation = z
             .object({
-                rating: z.string().min(1, "is required"),
+                rating: z.number().min(1, "is required"),
             })
             .safeParse({ rating });
         if (!validation.success) throw validation.error;
