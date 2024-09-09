@@ -5,8 +5,39 @@ class TransactionModels {
   static async getAll(userId) {
     const transactions = await database
       .collection("transactions")
-      .find({ userId: new ObjectId(String(userId)) })
+      .aggregate([
+        {
+          '$match': {
+            'userId': new ObjectId('66da78f579aaba56438e1266')
+          }
+        }, {
+          '$lookup': {
+            'from': 'parkingSpots',
+            'localField': 'spotId',
+            'foreignField': 'id',
+            'as': 'parkingSpotData'
+          }
+        }, {
+          '$unwind': {
+            'path': '$parkingSpotData',
+            'preserveNullAndEmptyArrays': true
+          }
+        }, {
+          '$lookup': {
+            'from': 'spotDetails',
+            'localField': 'spotId',
+            'foreignField': 'spotId',
+            'as': 'spotDetailsData'
+          }
+        }, {
+          '$unwind': {
+            'path': '$spotDetailsData',
+            'preserveNullAndEmptyArrays': true
+          }
+        }
+      ])
       .toArray();
+
     return transactions;
   }
 
@@ -57,7 +88,7 @@ class TransactionModels {
     }
     const type = spotDetail.type;
 
-    if(spotDetail.quantity == 0) {
+    if (spotDetail.quantity == 0) {
       let error = new Error();
       error.message = "Full Booked";
       error.name = "FullBooked";
@@ -84,7 +115,7 @@ class TransactionModels {
       checkinAt: "",
       createdAt: new Date(),
     });
-    
+
     return data.insertedId;
   }
 
@@ -119,7 +150,7 @@ class TransactionModels {
   }
 
   static async checkOutTransaction({ id, userId }) {
-    const trx = await database.collection("transactions").findOne({_id: new ObjectId(String(id))})
+    const trx = await database.collection("transactions").findOne({ _id: new ObjectId(String(id)) })
 
     await database.collection("spotDetails").updateOne(
       {
@@ -164,7 +195,7 @@ class TransactionModels {
       throw error;
     }
 
-    const trx = await database.collection("transactions").findOne({_id: new ObjectId(String(id))})
+    const trx = await database.collection("transactions").findOne({ _id: new ObjectId(String(id)) })
 
     await database.collection("spotDetails").updateOne(
       {
