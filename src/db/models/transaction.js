@@ -151,7 +151,7 @@ class TransactionModels {
         _id: new ObjectId(String(id)),
       },
       {
-        $set: { isActive: false, isCheckin: false },
+        $set: { status: "canceled" },
       }
     );
     if (!transaction.modifiedCount) {
@@ -160,6 +160,18 @@ class TransactionModels {
       error.name = "CancelFailed";
       throw error;
     }
+
+    const trx = await database.collection("transactions").findOne({_id: new ObjectId(String(id))})
+
+    await database.collection("spotDetails").updateOne(
+      {
+        _id: new ObjectId(String(trx.spotDetailId)),
+      },
+      {
+        $inc: { quantity: +1 },
+      }
+    );
+
     return "Cancel Success";
   }
 
