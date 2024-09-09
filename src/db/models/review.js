@@ -19,7 +19,7 @@ class ReviewModels {
         if (!validation.success) throw validation.error;
         const result = await database.collection("reviews").insertOne({
             userId: new ObjectId(String(userId)),
-            spotId,
+            spotId: new ObjectId(String(spotId)),
             rating, 
             comment: comment || "",
             createdAt: new Date()
