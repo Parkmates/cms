@@ -190,6 +190,7 @@ class TransactionModels {
     if (!transaction.modifiedCount) {
       let error = new Error();
       error.message = "Checkin Failed";
+      error.name = "checkinFailed"
       throw error;
     }
     return "Check-In Success";
@@ -220,7 +221,7 @@ class TransactionModels {
     if (!transaction.modifiedCount) {
       let error = new Error();
       error.message = "Checkout Failed";
-      error.name = "CheckoutFailed";
+      error.name = "checkoutFailed";
       throw error;
     }
     return "Check-Out Success";
@@ -239,7 +240,7 @@ class TransactionModels {
     if (!transaction.modifiedCount) {
       let error = new Error();
       error.message = "Cancel Failed";
-      error.name = "CancelFailed";
+      error.name = "cancelFailed";
       throw error;
     }
 

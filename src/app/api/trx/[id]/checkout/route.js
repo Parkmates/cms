@@ -12,7 +12,7 @@ async function PUT(req, res) {
     let msgError = error.message || "Internal server error";
     let status = 500;
 
-    if (error.name === "CheckoutFailed") {
+    if (error.name === "checkoutFailed") {
       status = 409;
     }
     if (error instanceof z.ZodError) {
