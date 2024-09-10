@@ -7,47 +7,49 @@ class TransactionModels {
       .collection("transactions")
       .aggregate([
         {
-          '$match': {
-            'userId': new ObjectId(String(userId))
-          }
+          $match: {
+            userId: new ObjectId(String(userId)),
+          },
         },
         {
-          '$lookup': {
-            'from': 'parkingSpots',
-            'localField': 'spotId',
-            'foreignField': 'id',
-            'as': 'parkingSpotData'
-          }
-        }, {
-          '$unwind': {
-            'path': '$parkingSpotData',
-            'preserveNullAndEmptyArrays': true
-          }
-        }, {
-          '$lookup': {
-            'from': 'spotDetails',
-            'localField': 'spotId',
-            'foreignField': 'spotId',
-            'as': 'spotDetailsData'
-          }
+          $lookup: {
+            from: "parkingSpots",
+            localField: "spotId",
+            foreignField: "id",
+            as: "parkingSpotData",
+          },
         },
         {
-          '$unwind': {
-            'path': '$spotDetailsData',
-            'preserveNullAndEmptyArrays': true
-          }
+          $unwind: {
+            path: "$parkingSpotData",
+            preserveNullAndEmptyArrays: true,
+          },
         },
         {
-          '$group': {
-            '_id': '$_id',
-            'transactionData': {
-              '$first': '$$ROOT'
-            }
-          }
+          $lookup: {
+            from: "spotDetails",
+            localField: "spotId",
+            foreignField: "spotId",
+            as: "spotDetailsData",
+          },
         },
         {
-          '$replaceRoot': { 'newRoot': '$transactionData' }
-        }
+          $unwind: {
+            path: "$spotDetailsData",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            transactionData: {
+              $first: "$$ROOT",
+            },
+          },
+        },
+        {
+          $replaceRoot: { newRoot: "$transactionData" },
+        },
       ])
       .toArray();
 
@@ -55,7 +57,8 @@ class TransactionModels {
   }
 
   static async getById({ id, userId }) {
-    const transaction = await database.collection("transactions")
+    const transaction = await database
+      .collection("transactions")
       // .findOne({
       //   $and: [
       //     { _id: new ObjectId(String(id)) },
@@ -64,46 +67,50 @@ class TransactionModels {
       // });
       .aggregate([
         {
-          '$match': {
-            '_id': new ObjectId(new ObjectId(String(id))),
-            'userId': new ObjectId(new ObjectId(String(userId)))
-          }
-        }, {
-          '$lookup': {
-            'from': 'parkingSpots',
-            'localField': 'spotId',
-            'foreignField': 'id',
-            'as': 'parkingSpotData'
-          }
-        }, {
-          '$unwind': {
-            'path': '$parkingSpotData',
-            'preserveNullAndEmptyArrays': true
-          }
-        }, {
-          '$lookup': {
-            'from': 'spotDetails',
-            'localField': 'spotId',
-            'foreignField': 'spotId',
-            'as': 'spotDetailsData'
-          }
-        }, {
-          '$unwind': {
-            'path': '$spotDetailsData',
-            'preserveNullAndEmptyArrays': true
-          }
+          $match: {
+            _id: new ObjectId(new ObjectId(String(id))),
+            userId: new ObjectId(new ObjectId(String(userId))),
+          },
         },
         {
-          '$group': {
-            '_id': '$_id',
-            'transactionData': {
-              '$first': '$$ROOT'
-            }
-          }
+          $lookup: {
+            from: "parkingSpots",
+            localField: "spotId",
+            foreignField: "id",
+            as: "parkingSpotData",
+          },
         },
         {
-          '$replaceRoot': { 'newRoot': '$transactionData' }
-        }
+          $unwind: {
+            path: "$parkingSpotData",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $lookup: {
+            from: "spotDetails",
+            localField: "spotId",
+            foreignField: "spotId",
+            as: "spotDetailsData",
+          },
+        },
+        {
+          $unwind: {
+            path: "$spotDetailsData",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            transactionData: {
+              $first: "$$ROOT",
+            },
+          },
+        },
+        {
+          $replaceRoot: { newRoot: "$transactionData" },
+        },
       ])
       .toArray();
     if (!transaction) {
@@ -273,7 +280,13 @@ class TransactionModels {
     return "Cancel Success";
   }
 
-  static async updateStatus({ id, type, amount = 0, bookAt = "", paymentAt = "" }) {
+  static async updateStatus({
+    id,
+    type,
+    amount = 0,
+    bookAt = "",
+    paymentAt = "",
+  }) {
     let status = "";
     if (type === "bookingPaymentSuccess") {
       status = "BookingSuccessfull";
@@ -292,19 +305,28 @@ class TransactionModels {
       throw error;
     }
 
+    let book = {
+      status: status,
+      bookAt: new Date(bookAt),
+    };
+
+    let pay = {
+      status: status,
+      paymentFee: Number(trx.paymentFee) + Number(amount),
+      paymentAt: new Date(paymentAt),
+    };
+
+    let toSet = bookAt !== "" ? book : pay
+
     const transaction = await database.collection("transactions").updateOne(
       {
         _id: new ObjectId(String(id)),
       },
       {
-        $set: {
-          status: status,
-          paymentFee: Number(trx.paymentFee) + Number(amount),
-          bookAt: bookAt,
-          paymentAt: paymentAt
-        },
+        $set: toSet,
       }
     );
+
     if (!transaction.modifiedCount) {
       let error = new Error();
       error.message = "cb midtrans failed";
