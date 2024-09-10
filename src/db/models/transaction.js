@@ -132,6 +132,12 @@ class TransactionModels {
       throw error;
     }
 
+    const parkSpot = await database
+      .collection("parkingSpots")
+      .findOne({
+        parkingSpotId: new ObjectId(String(spotDetail.parkingSpotId)),
+      });
+
     await database.collection("spotDetails").updateOne(
       {
         _id: new ObjectId(String(spotDetailId)),
@@ -143,6 +149,7 @@ class TransactionModels {
 
     const data = await database.collection("transactions").insertOne({
       userId: new ObjectId(String(userId)),
+      vendorId: new ObjectId(String(parkSpot.authorId)),
       spotDetailId: new ObjectId(String(spotDetailId)),
       status: "bookingPending",
       paymentUrl: "",
@@ -401,6 +408,52 @@ class TransactionModels {
       }
     );
     return data;
+  }
+
+  static async getHistoryForVendor({ role, userId }) {
+    const agg = [
+      {
+        $match: {
+          vendorId: new ObjectId(String(userId)),
+        },
+      },
+      {
+        $lookup: {
+          from: "spotDetails",
+          localField: "spotDetailId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $lookup: {
+                from: "parkingSpots",
+                localField: "parkingSpotId",
+                foreignField: "_id",
+                as: "parkingSpot",
+              },
+            },
+            {
+              $unwind: {
+                path: "$parkingSpot",
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+          ],
+          as: "spotDetail",
+        },
+      },
+      {
+        $unwind: {
+          path: "$spotDetail",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ];
+    const result = await database
+      .collection("transactions")
+      .aggregate(agg)
+      .toArray();
+
+    return result;
   }
 }
 
