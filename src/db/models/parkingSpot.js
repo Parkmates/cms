@@ -34,48 +34,54 @@ class ParkingSpotModels {
       },
       ...(role === "vendor"
         ? [
-          {
-            $match: {
-              authorId: new ObjectId(String(authorId)),
+            {
+              $match: {
+                authorId: new ObjectId(String(authorId)),
+              },
             },
-          },
-        ]
+          ]
         : []),
       {
         $lookup: {
-          from: 'spotDetails',
-          localField: '_id',
-          foreignField: 'parkingSpotId',
-          as: 'spotList'
-        }
-      }, {
+          from: "spotDetails",
+          localField: "_id",
+          foreignField: "parkingSpotId",
+          as: "spotList",
+        },
+      },
+      {
         $lookup: {
-          from: 'reviews',
-          localField: '_id',
-          foreignField: 'spotId',
-          as: 'reviews'
-        }
-      }, {
-        $lookup: {
-          from: 'users',
-          localField: 'reviews.userId',
-          foreignField: '_id',
-          as: 'user'
-        }
-      }, {
+          from: "reviews",
+          localField: "_id",
+          foreignField: "spotId",
+          pipeline: [
+            {
+              $lookup: {
+                from: "users",
+                localField: "userId",
+                foreignField: "_id",
+                as: "user",
+              },
+            },
+            {
+              $unwind: {
+                path: "$user",
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+          ],
+          as: "reviews",
+        },
+      },
+      {
         $project: {
-          'user.password': 0,
-          'user.username': 0,
-          'user.email': 0,
-          'user.role': 0,
-          'user._id': 0
-        }
-      }, {
-        '$unwind': {
-          'path': '$user',
-          'preserveNullAndEmptyArrays': true
-        }
-      }
+          "reviews.user.password": 0,
+          "reviews.user.username": 0,
+          "reviews.user.email": 0,
+          "reviews.user.role": 0,
+          "reviews.user._id": 0,
+        },
+      },
     ];
 
     const parkingSpot = await database
