@@ -3,6 +3,7 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Button,
+  Input,
   Pagination,
   Spinner,
   Table,
@@ -18,11 +19,14 @@ import { toast } from "react-toastify";
 export default function Report() {
   const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
   const [isLoadingData, setIsLoadingData] = useState(false);
-  const getData = async (page) => {
+  const getData = async () => {
     try {
       setIsLoadingData(true);
-      const response = await fetch("/api/trx/vendor?page=" + page);
+      const response = await fetch(
+        `/api/trx/vendor?page=${page}&search=${search}`
+      );
       const data = await response.json();
       setData(data);
       setIsLoadingData(false);
@@ -31,9 +35,13 @@ export default function Report() {
       toast.error(error.msg);
     }
   };
+  const onClear = () => {
+    setSearch("");
+  };
   useEffect(() => {
-    getData(page);
-  }, [page]);
+    getData();
+    console.log(search, "<<<< search");
+  }, [page, search]);
 
   return (
     <div className="flex flex-col gap-4 my-2">
@@ -55,6 +63,15 @@ export default function Report() {
           </Button>
         </div>
       </div>
+      <Input
+        isClearable
+        className="w-full sm:max-w-[44%]"
+        placeholder="Search by id..."
+        startContent={<FontAwesomeIcon icon={fas.faSearch} size="lg" />}
+        value={search}
+        onClear={() => onClear()}
+        onValueChange={(value) => setSearch(value)}
+      />
       <Table
         isStriped
         aria-label="Example static collection table"

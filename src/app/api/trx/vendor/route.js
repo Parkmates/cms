@@ -4,12 +4,14 @@ async function GET(req, res) {
   try {
     const searchParams = req.nextUrl.searchParams;
     const page = searchParams.get("page");
+    const search = searchParams.get("search");
     const role = req.headers.get("x-role");
     const userId = req.headers.get("x-id");
     const result = await TransactionModels.getHistoryForVendor({
       role,
       userId,
       page,
+      search,
     });
 
     return Response.json(result);

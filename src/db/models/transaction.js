@@ -409,15 +409,22 @@ class TransactionModels {
     return data;
   }
 
-  static async getHistoryForVendor({ role, userId, page }) {
+  static async getHistoryForVendor({ role, userId, page, search }) {
     const pageSize = 10;
     page = Math.max(1, +page);
 
+    const matchStage = {
+      vendorId: new ObjectId(String(userId)),
+    };
+
+    if (search) {
+      const searchId = new ObjectId(String(search));
+      matchStage._id = searchId;
+    }
+
     const agg = [
       {
-        $match: {
-          vendorId: new ObjectId(String(userId)),
-        },
+        $match: matchStage,
       },
       {
         $lookup: {
@@ -453,7 +460,7 @@ class TransactionModels {
 
     const totalCount = await database
       .collection("transactions")
-      .countDocuments({ vendorId: new ObjectId(String(userId)) });
+      .countDocuments(matchStage);
 
     const totalPages = Math.ceil(totalCount / pageSize);
 
