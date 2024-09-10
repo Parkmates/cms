@@ -295,12 +295,7 @@ class TransactionModels {
         _id: new ObjectId(String(id)),
       },
       {
-        $set: {
-          status: status,
-          paymentFee: Number(trx.paymentFee) + Number(amount),
-          bookAt: bookAt,
-          paymentAt: paymentAt,
-        },
+        $set: toSet,
       }
     );
 
