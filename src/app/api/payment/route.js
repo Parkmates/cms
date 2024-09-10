@@ -14,7 +14,7 @@ async function POST(req) {
     if (type === "booking") {
       let parameter = {
         transaction_details: {
-          order_id: `Booking-${trxId}`,
+          order_id: `Booking-${trxId}-${new Date().getTime()}`,
           gross_amount: amount,
         },
         item_details: {
@@ -36,7 +36,7 @@ async function POST(req) {
     } else if (type === "payment") {
       let parameter = {
         transaction_details: {
-          order_id: `Payment-${trxId}`,
+          order_id: `Payment-${trxId}-${new Date().getTime()}`,
           gross_amount: amount,
         },
         item_details: {

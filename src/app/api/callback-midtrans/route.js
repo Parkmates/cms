@@ -2,7 +2,7 @@ const TransactionModels = require("@/db/models/transaction");
 
 async function POST(req) {
   const notif = await req.json();
-  const [type, id] = notif.order_id.split("-");
+  const [type, id, time] = notif.order_id.split("-");
   console.log(notif.transaction_status);
   if (type === "Booking") {
     if (notif.transaction_status === "settlement") {
@@ -13,7 +13,6 @@ async function POST(req) {
         type: status,
         bookAt: bookTime,
       });
-      console.log(status, "<<<<");
 
       return Response.json(status);
     } else if (notif.transaction_status === "failed") {
