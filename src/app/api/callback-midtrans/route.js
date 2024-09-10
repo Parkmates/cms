@@ -7,7 +7,8 @@ async function POST(req) {
   if (type === "Booking") {
     if (notif.transaction_status === "settlement") {
       const status = "bookingPaymentSuccess";
-      const update = await TransactionModels.updateStatus({ id, type: status });
+      const bookTime = notif.transaction_time;
+      const update = await TransactionModels.updateStatus({ id, type: status, bookAt: bookTime });
       console.log(status, '<<<<')
 
       return Response.json(status);
@@ -28,7 +29,8 @@ async function POST(req) {
   } else if (type === "Payment") {
     if (notif.transaction_status === "settlement") {
       const status = "paymentSuccess";
-      const update = await TransactionModels.updateStatus({ id, type: status, amount: notif.gross_amount });
+      const payTime = notif.transaction_time;
+      const update = await TransactionModels.updateStatus({ id, type: status, amount: notif.gross_amount, paymentAt: payTime });
 
       return Response.json(update);
     } else if(notif.transaction_status === "failed") {

@@ -150,6 +150,8 @@ class TransactionModels {
       paymentFee: 0,
       checkoutAt: "",
       checkinAt: "",
+      bookAt: "",
+      paymentAt: "",
       createdAt: new Date(),
     });
 
@@ -250,7 +252,7 @@ class TransactionModels {
     return "Cancel Success";
   }
 
-  static async updateStatus({ id, type, amount = 0 }) {
+  static async updateStatus({ id, type, amount = 0, bookAt = "", paymentAt = "" }) {
     let status = "";
     if (type === "bookingPaymentSuccess") {
       status = "bookingSuccessfull";
@@ -277,6 +279,8 @@ class TransactionModels {
         $set: {
           status: status,
           paymentFee: Number(trx.paymentFee) + Number(amount),
+          bookAt: bookAt,
+          paymentAt: paymentAt
         },
       }
     );
