@@ -132,11 +132,9 @@ class TransactionModels {
       throw error;
     }
 
-    const parkSpot = await database
-      .collection("parkingSpots")
-      .findOne({
-        parkingSpotId: new ObjectId(String(spotDetail.parkingSpotId)),
-      });
+    const parkSpot = await database.collection("parkingSpots").findOne({
+      _id: new ObjectId(String(spotDetail.parkingSpotId)),
+    });
 
     await database.collection("spotDetails").updateOne(
       {
@@ -411,7 +409,10 @@ class TransactionModels {
     return data;
   }
 
-  static async getHistoryForVendor({ role, userId }) {
+  static async getHistoryForVendor({ role, userId, page }) {
+    const pageSize = 10;
+    page = Math.max(1, +page);
+
     const agg = [
       {
         $match: {
@@ -449,12 +450,24 @@ class TransactionModels {
         },
       },
     ];
+
+    const totalCount = await database
+      .collection("transactions")
+      .countDocuments({ vendorId: new ObjectId(String(userId)) });
+
+    const totalPages = Math.ceil(totalCount / pageSize);
+
     const result = await database
       .collection("transactions")
       .aggregate(agg)
+      .skip(pageSize * (page - 1))
+      .limit(pageSize)
       .toArray();
 
-    return result;
+    return {
+      data: result,
+      totalPages,
+    };
   }
 }
 

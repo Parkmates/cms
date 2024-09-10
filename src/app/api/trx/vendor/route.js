@@ -2,14 +2,17 @@ const TransactionModels = require("@/db/models/transaction");
 
 async function GET(req, res) {
   try {
+    const searchParams = req.nextUrl.searchParams;
+    const page = searchParams.get("page");
     const role = req.headers.get("x-role");
     const userId = req.headers.get("x-id");
     const result = await TransactionModels.getHistoryForVendor({
       role,
       userId,
+      page,
     });
 
-    return Response.json(result)
+    return Response.json(result);
   } catch (error) {
     let msgError = error.message || "Internal server error";
     let status = 500;
@@ -24,4 +27,4 @@ async function GET(req, res) {
   }
 }
 
-module.exports = { GET }
+module.exports = { GET };

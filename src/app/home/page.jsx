@@ -35,6 +35,7 @@ import Cookies from "js-cookie";
 import { CldUploadWidget } from "next-cloudinary";
 import QRCodeScanner from "@/components/QRCodeScanner";
 import QRScannerComponent from "@/components/scan";
+import Report from "@/components/Report";
 
 export default function HomePage() {
   const pathname = usePathname();
@@ -434,6 +435,9 @@ export default function HomePage() {
                 </TableBody>
               </Table>
             </div>
+          </Tab>
+          <Tab key="transactionReport" title="Transaction Report">
+            <Report />
           </Tab>
           {role === "admin" && (
             <Tab
