@@ -362,6 +362,20 @@ class TransactionModels {
         $set: { status: "cancelled" },
       }
     );
+
+    console.log(data);
+
+    //tambahin lagi stock nya
+    data.forEach(async (item) => {
+      await database.collection("spotDetails").updateOne(
+        {
+          _id: new ObjectId(String(item.spotDetailId)),
+        },
+        {
+          $inc: { quantity: +1 },
+        }
+      );
+    });
     return data;
   }
   static async checkOutStatusUpdater() {
