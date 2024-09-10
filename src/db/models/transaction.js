@@ -13,42 +13,31 @@ class TransactionModels {
         },
         {
           $lookup: {
-            from: "parkingSpots",
-            localField: "spotId",
-            foreignField: "id",
-            as: "parkingSpotData",
+            from: "spotDetails",
+            localField: "spotDetailId",
+            foreignField: "_id",
+            as: "spotDetail",
           },
         },
         {
           $unwind: {
-            path: "$parkingSpotData",
+            path: "$spotDetail",
             preserveNullAndEmptyArrays: true,
           },
         },
         {
           $lookup: {
-            from: "spotDetails",
-            localField: "spotId",
-            foreignField: "spotId",
-            as: "spotDetailsData",
+            from: "parkingSpots",
+            localField: "spotDetail.parkingSpotId",
+            foreignField: "_id",
+            as: "parkingSpot",
           },
         },
         {
           $unwind: {
-            path: "$spotDetailsData",
+            path: "$parkingSpot",
             preserveNullAndEmptyArrays: true,
           },
-        },
-        {
-          $group: {
-            _id: "$_id",
-            transactionData: {
-              $first: "$$ROOT",
-            },
-          },
-        },
-        {
-          $replaceRoot: { newRoot: "$transactionData" },
         },
       ])
       .toArray();
@@ -59,12 +48,6 @@ class TransactionModels {
   static async getById({ id, userId }) {
     const transaction = await database
       .collection("transactions")
-      // .findOne({
-      //   $and: [
-      //     { _id: new ObjectId(String(id)) },
-      //     { userId: new ObjectId(String(userId)) },
-      //   ],
-      // });
       .aggregate([
         {
           $match: {
@@ -74,42 +57,31 @@ class TransactionModels {
         },
         {
           $lookup: {
-            from: "parkingSpots",
-            localField: "spotId",
-            foreignField: "id",
-            as: "parkingSpotData",
+            from: "spotDetails",
+            localField: "spotDetailId",
+            foreignField: "_id",
+            as: "spotDetail",
           },
         },
         {
           $unwind: {
-            path: "$parkingSpotData",
+            path: "$spotDetail",
             preserveNullAndEmptyArrays: true,
           },
         },
         {
           $lookup: {
-            from: "spotDetails",
-            localField: "spotId",
-            foreignField: "spotId",
-            as: "spotDetailsData",
+            from: "parkingSpots",
+            localField: "spotDetail.parkingSpotId",
+            foreignField: "_id",
+            as: "parkingSpot",
           },
         },
         {
           $unwind: {
-            path: "$spotDetailsData",
+            path: "$parkingSpot",
             preserveNullAndEmptyArrays: true,
           },
-        },
-        {
-          $group: {
-            _id: "$_id",
-            transactionData: {
-              $first: "$$ROOT",
-            },
-          },
-        },
-        {
-          $replaceRoot: { newRoot: "$transactionData" },
         },
       ])
       .toArray();
@@ -128,7 +100,7 @@ class TransactionModels {
       $and: [
         { spotDetailId: new ObjectId(String(spotDetailId)) },
         { userId: new ObjectId(String(userId)) },
-        { status: "BookingPending" },
+        { status: "bookingPending" },
       ],
     });
 
@@ -172,7 +144,7 @@ class TransactionModels {
     const data = await database.collection("transactions").insertOne({
       userId: new ObjectId(String(userId)),
       spotDetailId: new ObjectId(String(spotDetailId)),
-      status: "BookingPending",
+      status: "bookingPending",
       paymentUrl: "",
       bookingFee: type === "car" ? 10000 : 5000,
       paymentFee: 0,
@@ -235,7 +207,7 @@ class TransactionModels {
         _id: new ObjectId(String(id)),
       },
       {
-        $set: { status: "CheckoutSuccessfull", checkoutAt: new Date() },
+        $set: { status: "checkoutSuccessfull", checkoutAt: new Date() },
       }
     );
     if (!transaction.modifiedCount) {
@@ -289,11 +261,11 @@ class TransactionModels {
   }) {
     let status = "";
     if (type === "bookingPaymentSuccess") {
-      status = "BookingSuccessfull";
-    } else if (type === "failed") {
+      status = "bookingSuccessfull";
+    } else if (type === "failed" || type === "expire") {
       status = "failed";
     } else if (type === "paymentSuccess") {
-      status = "CheckoutPending";
+      status = "checkoutPending";
     }
 
     const trx = await database.collection("transactions").findOne({
@@ -323,7 +295,12 @@ class TransactionModels {
         _id: new ObjectId(String(id)),
       },
       {
-        $set: toSet,
+        $set: {
+          status: status,
+          paymentFee: Number(trx.paymentFee) + Number(amount),
+          bookAt: bookAt,
+          paymentAt: paymentAt,
+        },
       }
     );
 
@@ -362,6 +339,9 @@ class TransactionModels {
     }
     return "ok";
   }
+
+  // KHUSUS UNTUK CRON JOB
+  // untuk get all trx
 }
 
 module.exports = TransactionModels;
