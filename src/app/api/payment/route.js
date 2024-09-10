@@ -52,8 +52,16 @@ async function POST(req) {
       return Response.json({ paymentUrl: url });
     }
   } catch (error) {
-    console.log(error);
-    return Response.json({ msg: error.message });
+    let msgError = error.message || "Internal server error";
+    let status = 500;
+    return Response.json(
+      {
+        msg: msgError,
+      },
+      {
+        status: status,
+      }
+    );
   }
 }
 

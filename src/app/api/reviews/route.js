@@ -11,11 +11,6 @@ async function GET(req) {
   } catch (error) {
     let msgError = error.message || "Internal server error";
     let status = 500;
-
-    if (error instanceof z.ZodError) {
-      msgError = error.errors[0].path[0] + " " + error.errors[0].message;
-      status = 400;
-    }
     return Response.json(
       {
         msg: msgError,
@@ -38,11 +33,6 @@ async function POST(req) {
   } catch (error) {
     let msgError = error.message || "Internal server error";
     let status = 500;
-
-    if (error instanceof z.ZodError) {
-      msgError = error.errors[0].path[0] + " " + error.errors[0].message;
-      status = 400;
-    }
     return Response.json(
       {
         msg: msgError,

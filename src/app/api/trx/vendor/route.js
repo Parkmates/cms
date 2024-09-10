@@ -11,8 +11,16 @@ async function GET(req, res) {
 
     return Response.json(result)
   } catch (error) {
-    console.log(error);
-    return Response.json(error);
+    let msgError = error.message || "Internal server error";
+    let status = 500;
+    return Response.json(
+      {
+        msg: msgError,
+      },
+      {
+        status: status,
+      }
+    );
   }
 }
 
