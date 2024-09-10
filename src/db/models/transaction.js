@@ -335,7 +335,25 @@ class TransactionModels {
   }
 
   // KHUSUS UNTUK CRON JOB
-  // untuk get all trx
+  // get all trx untuk ambil trx yang status nya booking successfull,
+  // tapi dalam 1 jam belom parking
+
+  // update status nya jadi cancelled
+
+  static async checkInStatusUpdater() {
+    const data = await database
+      .collection("transactions")
+      .find({
+        $and: [
+          { status: "bookingSuccessfull" },
+          { checkinAt: { $lt: new Date(Date.now() - 1000 * 60 * 60) } },
+        ],
+      })
+      .toArray();
+
+    console.log(data);
+    return data;
+  }
 }
 
 module.exports = TransactionModels;
