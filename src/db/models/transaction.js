@@ -251,17 +251,6 @@ class TransactionModels {
 
     return "Cancel Success";
   }
-
-  static convertToISO(dateString) {
-    const [datePart, timePart] = dateString.split(" ");
-    const [year, month, day] = datePart.split("-");
-    const [hour, minute, second] = timePart.split(":");
-
-    const localDate = new Date(year, month - 1, day, hour, minute, second);
-
-    return localDate.toISOString();
-  }
-
   static async updateStatus({
     id,
     type,
@@ -295,8 +284,8 @@ class TransactionModels {
         $set: {
           status: status,
           paymentFee: Number(trx.paymentFee) + Number(amount),
-          bookAt: convertToISO(bookAt),
-          paymentAt: convertToISO(paymentAt),
+          bookAt: new Date(bookAt),
+          paymentAt: new Date(paymentAt),
         },
       }
     );
