@@ -262,7 +262,7 @@ class TransactionModels {
     let status = "";
     if (type === "bookingPaymentSuccess") {
       status = "bookingSuccessfull";
-    } else if (type === "failed" || type === "expired") {
+    } else if (type === "failed" || type === "expire") {
       status = "failed";
     } else if (type === "paymentSuccess") {
       status = "checkoutPending";
