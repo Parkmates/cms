@@ -251,7 +251,6 @@ class TransactionModels {
 
     return "Cancel Success";
   }
-
   static async updateStatus({
     id,
     type,
