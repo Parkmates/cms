@@ -142,6 +142,7 @@ export default function Report() {
             </TableRow>
           ))}
         </TableBody>
+        <TableBody emptyContent={"No data to display."}>{[]}</TableBody>
       </Table>
     </div>
   );
