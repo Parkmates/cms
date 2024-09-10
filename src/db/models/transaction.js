@@ -252,11 +252,17 @@ class TransactionModels {
     return "Cancel Success";
   }
 
-  static async updateStatus({ id, type, amount = 0, bookAt = "", paymentAt = "" }) {
+  static async updateStatus({
+    id,
+    type,
+    amount = 0,
+    bookAt = "",
+    paymentAt = "",
+  }) {
     let status = "";
     if (type === "bookingPaymentSuccess") {
       status = "bookingSuccessfull";
-    } else if (type === "failed") {
+    } else if (type === "failed" || type === "expired") {
       status = "failed";
     } else if (type === "paymentSuccess") {
       status = "checkoutPending";
@@ -280,7 +286,7 @@ class TransactionModels {
           status: status,
           paymentFee: Number(trx.paymentFee) + Number(amount),
           bookAt: bookAt,
-          paymentAt: paymentAt
+          paymentAt: paymentAt,
         },
       }
     );
