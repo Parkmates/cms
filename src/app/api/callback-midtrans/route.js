@@ -16,6 +16,11 @@ async function POST(req) {
       const update = await TransactionModels.updateStatus({ id, type: status });
 
       return Response.json(update);
+    } else if(notif.transaction_status === "expire") {
+      const status = "expire";
+      const update = await TransactionModels.updateStatus({ id, type: status });
+
+      return Response.json(update);
     }else{
         console.log(notif.transaction_status)
         return Response.json(notif.transaction_status);
@@ -28,6 +33,11 @@ async function POST(req) {
       return Response.json(update);
     } else if(notif.transaction_status === "failed") {
       const status = "failed";
+      const update = await TransactionModels.updateStatus({ id, type: status });
+
+      return Response.json(update);
+    }else if(notif.transaction_status === "expire") {
+      const status = "expire";
       const update = await TransactionModels.updateStatus({ id, type: status });
 
       return Response.json(update);
