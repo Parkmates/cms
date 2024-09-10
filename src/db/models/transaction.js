@@ -344,13 +344,24 @@ class TransactionModels {
     const data = await database
       .collection("transactions")
       .find({
+        // status: "bookingSuccessfull",
         $and: [
           { status: "bookingSuccessfull" },
-          { checkinAt: { $lt: new Date(Date.now() - 1000 * 60 * 60) } },
+          // { bookAt: { $lt: new Date(Date.now() - 1000 * 60 * 60) } }, //kalo 1 jam dari sekarang
+          { bookAt: { $lt: new Date(Date.now() - 1000 * 60) } }, // 1 menit dari sekarang TESTING
         ],
       })
       .toArray();
 
+    // update status nya jadi cancelled
+    await database.collection("transactions").updateMany(
+      {
+        status: "bookingSuccessfull",
+      },
+      {
+        $set: { status: "cancelled" },
+      }
+    );
     console.log(data);
     return data;
   }
