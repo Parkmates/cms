@@ -132,6 +132,12 @@ class TransactionModels {
       throw error;
     }
 
+    const parkSpot = await database
+      .collection("parkingSpots")
+      .findOne({
+        parkingSpotId: new ObjectId(String(spotDetail.parkingSpotId)),
+      });
+
     await database.collection("spotDetails").updateOne(
       {
         _id: new ObjectId(String(spotDetailId)),
@@ -143,6 +149,7 @@ class TransactionModels {
 
     const data = await database.collection("transactions").insertOne({
       userId: new ObjectId(String(userId)),
+      vendorId: new ObjectId(String(parkSpot.authorId)),
       spotDetailId: new ObjectId(String(spotDetailId)),
       status: "bookingPending",
       paymentUrl: "",
