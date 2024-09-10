@@ -276,19 +276,28 @@ class TransactionModels {
       throw error;
     }
 
+    let book = {
+      status: status,
+      bookAt: new Date(bookAt),
+    };
+
+    let pay = {
+      status: status,
+      paymentFee: Number(trx.paymentFee) + Number(amount),
+      paymentAt: new Date(paymentAt),
+    };
+
+    let toSet = bookAt !== "" ? book : pay
+
     const transaction = await database.collection("transactions").updateOne(
       {
         _id: new ObjectId(String(id)),
       },
       {
-        $set: {
-          status: status,
-          paymentFee: Number(trx.paymentFee) + Number(amount),
-          bookAt: new Date(bookAt),
-          paymentAt: new Date(paymentAt),
-        },
+        $set: toSet,
       }
     );
+
     if (!transaction.modifiedCount) {
       let error = new Error();
       error.message = "cb midtrans failed";
