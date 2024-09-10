@@ -132,11 +132,9 @@ class TransactionModels {
       throw error;
     }
 
-    const parkSpot = await database
-      .collection("parkingSpots")
-      .findOne({
-        parkingSpotId: new ObjectId(String(spotDetail.parkingSpotId)),
-      });
+    const parkSpot = await database.collection("parkingSpots").findOne({
+      _id: new ObjectId(String(spotDetail.parkingSpotId)),
+    });
 
     await database.collection("spotDetails").updateOne(
       {
@@ -411,12 +409,23 @@ class TransactionModels {
     return data;
   }
 
-  static async getHistoryForVendor({ role, userId }) {
+  static async getHistoryForVendor({ role, userId, limit, page, search }) {
+    // Set pageSize ke nilai yang sangat besar jika limit tidak diisi
+    const pageSize = limit ? parseInt(limit, 10) : Infinity;
+    page = Math.max(1, +page);
+
+    const matchStage = {
+      vendorId: new ObjectId(String(userId)),
+    };
+
+    if (search) {
+      const searchId = new ObjectId(String(search));
+      matchStage._id = searchId;
+    }
+
     const agg = [
       {
-        $match: {
-          vendorId: new ObjectId(String(userId)),
-        },
+        $match: matchStage,
       },
       {
         $lookup: {
@@ -449,12 +458,30 @@ class TransactionModels {
         },
       },
     ];
-    const result = await database
-      .collection("transactions")
-      .aggregate(agg)
-      .toArray();
 
-    return result;
+    const totalCount = await database
+      .collection("transactions")
+      .countDocuments(matchStage);
+
+    // Jika pageSize adalah Infinity, jangan hitung totalPages
+    const totalPages =
+      pageSize === Infinity ? null : Math.ceil(totalCount / pageSize);
+
+    const resultQuery = database.collection("transactions").aggregate(agg);
+
+    // Hanya terapkan limit dan skip jika pageSize tidak Infinity
+    const result =
+      pageSize === Infinity
+        ? await resultQuery.toArray()
+        : await resultQuery
+            .skip(pageSize * (page - 1))
+            .limit(pageSize)
+            .toArray();
+
+    return {
+      data: result,
+      totalPages,
+    };
   }
 }
 

@@ -1,12 +1,13 @@
 const UserModels = require("@/db/models/user");
+const { z } = require("zod");
 
 async function GET(req, res) {
   try {
     const userId = req.headers.get("x-id");
-    const result = await UserModels.getUserProfile(userId)
-    return Response.json(result)
+    const result = await UserModels.getUserProfile(userId);
+    return Response.json(result);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     let msgError = error.message || "Internal server error";
     let status = 500;
 
