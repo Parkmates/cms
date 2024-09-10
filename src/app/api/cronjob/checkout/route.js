@@ -15,5 +15,8 @@ export async function GET(request) {
       }
     );
   }
-  return new Response("Cron job is running");
+
+  const data = await TransactionModels.checkOutStatusUpdater();
+  // return new Response("Cron job is running");
+  return Response.json(data);
 }

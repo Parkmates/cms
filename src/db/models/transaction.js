@@ -251,7 +251,6 @@ class TransactionModels {
 
     return "Cancel Success";
   }
-
   static async updateStatus({
     id,
     type,
@@ -279,16 +278,16 @@ class TransactionModels {
 
     let book = {
       status: status,
-      bookAt: new Date(bookAt),
+      bookAt: new Date(),
     };
 
     let pay = {
       status: status,
       paymentFee: Number(trx.paymentFee) + Number(amount),
-      paymentAt: new Date(paymentAt),
+      paymentAt: new Date(),
     };
 
-    let toSet = bookAt !== "" ? book : pay
+    let toSet = bookAt !== "" ? book : pay;
 
     const transaction = await database.collection("transactions").updateOne(
       {
@@ -336,7 +335,73 @@ class TransactionModels {
   }
 
   // KHUSUS UNTUK CRON JOB
-  // untuk get all trx
+  // get all trx untuk ambil trx yang status nya booking successfull,
+  // tapi dalam 1 jam belom parking
+
+  // update status nya jadi cancelled
+
+  static async checkInStatusUpdater() {
+    const data = await database
+      .collection("transactions")
+      .find({
+        // status: "bookingSuccessfull",
+        $and: [
+          { status: "bookingSuccessfull" },
+          // { bookAt: { $lt: new Date(Date.now() - 1000 * 60 * 60) } }, //kalo 1 jam dari sekarang
+          { bookAt: { $lt: new Date(Date.now() - 1000 * 60) } }, // 1 menit dari sekarang TESTING
+        ],
+      })
+      .toArray();
+
+    // update status nya jadi cancelled
+    await database.collection("transactions").updateMany(
+      {
+        status: "bookingSuccessfull",
+      },
+      {
+        $set: { status: "cancelled" },
+      }
+    );
+
+    console.log(data);
+
+    //tambahin lagi stock nya
+    data.forEach(async (item) => {
+      await database.collection("spotDetails").updateOne(
+        {
+          _id: new ObjectId(String(item.spotDetailId)),
+        },
+        {
+          $inc: { quantity: +1 },
+        }
+      );
+    });
+    return data;
+  }
+  static async checkOutStatusUpdater() {
+    const data = await database
+      .collection("transactions")
+      .find({
+        // status: "checkoutPending",
+        $and: [
+          { status: "checkoutPending" },
+          // { paymentAt: { $lt: new Date(Date.now() - 1000 * 60 * 60) } }, //kalo 1 jam dari sekarang
+          { paymentAt: { $lt: new Date(Date.now() - 1000 * 60) } }, // 1 menit dari sekarang TESTING
+        ],
+      })
+      .toArray();
+
+    // update status nya jadi cancelled
+    await database.collection("transactions").updateMany(
+      {
+        status: "checkoutPending",
+      },
+      {
+        $set: { status: "parking" },
+      }
+    );
+    return data;
+  }
 }
 
 module.exports = TransactionModels;

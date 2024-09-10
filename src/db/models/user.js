@@ -223,6 +223,17 @@ class UserModels {
     });
     return { result: "Success delete" };
   }
+
+  static async getUserProfile(userId) {
+    const result = await database
+      .collection("users")
+      .findOne(
+        { _id: new ObjectId(String(userId)) },
+        { projection: { password: 0, role: 0 } }
+      );
+    console.log(result);
+    return result;
+  }
 }
 
 module.exports = UserModels;
