@@ -315,6 +315,9 @@ class TransactionModels {
     }
     return "ok";
   }
+
+  // KHUSUS UNTUK CRON JOB
+  // untuk get all trx
 }
 
 module.exports = TransactionModels;
