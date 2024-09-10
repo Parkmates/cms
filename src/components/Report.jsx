@@ -15,23 +15,24 @@ import {
 } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import * as XLSX from "xlsx";
 
 export default function Report() {
   const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [isLoadingData, setIsLoadingData] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const getData = async () => {
     try {
-      setIsLoadingData(true);
+      // setIsLoading(true);
       const response = await fetch(
-        `/api/trx/vendor?page=${page}&search=${search}`
+        `/api/trx/vendor?limit=${10}&page=${page}&search=${search}`
       );
       const data = await response.json();
       setData(data);
-      setIsLoadingData(false);
+      // setIsLoading(false);
     } catch (error) {
-      setIsLoadingData(false);
+      // setIsLoading(false);
       toast.error(error.msg);
     }
   };
@@ -40,8 +41,44 @@ export default function Report() {
   };
   useEffect(() => {
     getData();
-    console.log(search, "<<<< search");
   }, [page, search]);
+
+  const exportToExcel = async () => {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("/api/trx/vendor");
+      const data = await response.json();
+
+      const worksheet = XLSX.utils.json_to_sheet(data.data);
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Transactions");
+
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+      });
+
+      const fileURL = URL.createObjectURL(
+        new Blob([excelBuffer], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        })
+      );
+
+      const link = document.createElement("a");
+      link.href = fileURL;
+      link.download = "transactions.xlsx";
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error exporting data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-4 my-2">
@@ -49,17 +86,15 @@ export default function Report() {
         <h1 className="text-xl md:text-3xl">Transaction Report</h1>
         <div className="flex items-center gap-2">
           <Button
-            onPress={() => {
-              onOpenScanQR();
-              setScanAction("checkin");
-            }}
+            isLoading={isLoading}
+            onPress={() => exportToExcel()}
             className="bg-green-500 text-white"
             variant="flat"
             startContent={
               <FontAwesomeIcon icon={fas.faFileExcel} size="lg" color="white" />
             }
           >
-            Export to CSV
+            Export to Excel
           </Button>
         </div>
       </div>

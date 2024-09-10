@@ -409,8 +409,9 @@ class TransactionModels {
     return data;
   }
 
-  static async getHistoryForVendor({ role, userId, page, search }) {
-    const pageSize = 10;
+  static async getHistoryForVendor({ role, userId, limit, page, search }) {
+    // Set pageSize ke nilai yang sangat besar jika limit tidak diisi
+    const pageSize = limit ? parseInt(limit, 10) : Infinity;
     page = Math.max(1, +page);
 
     const matchStage = {
@@ -462,14 +463,20 @@ class TransactionModels {
       .collection("transactions")
       .countDocuments(matchStage);
 
-    const totalPages = Math.ceil(totalCount / pageSize);
+    // Jika pageSize adalah Infinity, jangan hitung totalPages
+    const totalPages =
+      pageSize === Infinity ? null : Math.ceil(totalCount / pageSize);
 
-    const result = await database
-      .collection("transactions")
-      .aggregate(agg)
-      .skip(pageSize * (page - 1))
-      .limit(pageSize)
-      .toArray();
+    const resultQuery = database.collection("transactions").aggregate(agg);
+
+    // Hanya terapkan limit dan skip jika pageSize tidak Infinity
+    const result =
+      pageSize === Infinity
+        ? await resultQuery.toArray()
+        : await resultQuery
+            .skip(pageSize * (page - 1))
+            .limit(pageSize)
+            .toArray();
 
     return {
       data: result,

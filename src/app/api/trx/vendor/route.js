@@ -3,6 +3,7 @@ const TransactionModels = require("@/db/models/transaction");
 async function GET(req, res) {
   try {
     const searchParams = req.nextUrl.searchParams;
+    const limit = searchParams.get("limit");
     const page = searchParams.get("page");
     const search = searchParams.get("search");
     const role = req.headers.get("x-role");
@@ -10,6 +11,7 @@ async function GET(req, res) {
     const result = await TransactionModels.getHistoryForVendor({
       role,
       userId,
+      limit,
       page,
       search,
     });
