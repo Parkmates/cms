@@ -354,17 +354,38 @@ class TransactionModels {
       .toArray();
 
     // update status nya jadi cancelled
-    // await database.collection("transactions").updateMany(
-    //   {
-    //     status: "bookingSuccessfull",
-    //   },
-    //   {
-    //     $set: { status: "cancelled" },
-    //   }
-    // );
-    console.log(data);
-    console.log("now", new Date(Date.now() - 1000 * 60));
+    await database.collection("transactions").updateMany(
+      {
+        status: "bookingSuccessfull",
+      },
+      {
+        $set: { status: "cancelled" },
+      }
+    );
+    return data;
+  }
+  static async checkOutStatusUpdater() {
+    const data = await database
+      .collection("transactions")
+      .find({
+        // status: "checkoutPending",
+        $and: [
+          { status: "checkoutPending" },
+          // { paymentAt: { $lt: new Date(Date.now() - 1000 * 60 * 60) } }, //kalo 1 jam dari sekarang
+          { paymentAt: { $lt: new Date(Date.now() - 1000 * 60) } }, // 1 menit dari sekarang TESTING
+        ],
+      })
+      .toArray();
 
+    // update status nya jadi cancelled
+    await database.collection("transactions").updateMany(
+      {
+        status: "checkoutPending",
+      },
+      {
+        $set: { status: "parking" },
+      }
+    );
     return data;
   }
 }
