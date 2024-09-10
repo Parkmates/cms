@@ -43,19 +43,38 @@ class ParkingSpotModels {
         : []),
       {
         $lookup: {
-          from: "spotDetails",
-          localField: "_id",
-          foreignField: "parkingSpotId",
-          as: "spotList",
-        },
-      },
-      {
+          from: 'spotDetails',
+          localField: '_id',
+          foreignField: 'parkingSpotId',
+          as: 'spotList'
+        }
+      }, {
         $lookup: {
-          from: "reviews",
-          localField: "_id",
-          foreignField: "spotId",
-          as: "reviews"
-        },
+          from: 'reviews',
+          localField: '_id',
+          foreignField: 'spotId',
+          as: 'reviews'
+        }
+      }, {
+        $lookup: {
+          from: 'users',
+          localField: 'reviews.userId',
+          foreignField: '_id',
+          as: 'user'
+        }
+      }, {
+        $project: {
+          'user.password': 0,
+          'user.username': 0,
+          'user.email': 0,
+          'user.role': 0,
+          'user._id': 0
+        }
+      }, {
+        '$unwind': {
+          'path': '$user',
+          'preserveNullAndEmptyArrays': true
+        }
       }
     ];
 
@@ -63,7 +82,6 @@ class ParkingSpotModels {
       .collection("parkingSpots")
       .aggregate(agg)
       .toArray();
-
     if (!parkingSpot) {
       let error = new Error();
       error.message = "Parking Spot NotFound";
