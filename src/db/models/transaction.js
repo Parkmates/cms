@@ -402,6 +402,52 @@ class TransactionModels {
     );
     return data;
   }
+
+  static async getHistoryForVendor({ role, userId }) {
+    const agg = [
+      {
+        $match: {
+          vendorId: new ObjectId(String(userId)),
+        },
+      },
+      {
+        $lookup: {
+          from: "spotDetails",
+          localField: "spotDetailId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $lookup: {
+                from: "parkingSpots",
+                localField: "parkingSpotId",
+                foreignField: "_id",
+                as: "parkingSpot",
+              },
+            },
+            {
+              $unwind: {
+                path: "$parkingSpot",
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+          ],
+          as: "spotDetail",
+        },
+      },
+      {
+        $unwind: {
+          path: "$spotDetail",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ];
+    const result = await database
+      .collection("transactions")
+      .aggregate(agg)
+      .toArray();
+
+    return result;
+  }
 }
 
 module.exports = TransactionModels;
