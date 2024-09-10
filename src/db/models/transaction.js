@@ -278,16 +278,16 @@ class TransactionModels {
 
     let book = {
       status: status,
-      bookAt: new Date(bookAt),
+      bookAt: new Date(),
     };
 
     let pay = {
       status: status,
       paymentFee: Number(trx.paymentFee) + Number(amount),
-      paymentAt: new Date(paymentAt),
+      paymentAt: new Date(),
     };
 
-    let toSet = bookAt !== "" ? book : pay
+    let toSet = bookAt !== "" ? book : pay;
 
     const transaction = await database.collection("transactions").updateOne(
       {
@@ -354,15 +354,17 @@ class TransactionModels {
       .toArray();
 
     // update status nya jadi cancelled
-    await database.collection("transactions").updateMany(
-      {
-        status: "bookingSuccessfull",
-      },
-      {
-        $set: { status: "cancelled" },
-      }
-    );
+    // await database.collection("transactions").updateMany(
+    //   {
+    //     status: "bookingSuccessfull",
+    //   },
+    //   {
+    //     $set: { status: "cancelled" },
+    //   }
+    // );
     console.log(data);
+    console.log("now", new Date(Date.now() - 1000 * 60));
+
     return data;
   }
 }
