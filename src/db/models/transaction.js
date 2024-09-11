@@ -169,7 +169,13 @@ class TransactionModels {
     // jadi kalo ada user yang nakal, mau checkin pake qr code yang sama, gabisa
     const trx = await database.collection("transactions").findOne({
       _id: new ObjectId(String(id)),
+      vendorId: new ObjectId(String(userId)),
     });
+    if (!trx) {
+      let error = new Error();
+      error.message = "Your don't have authority";
+      throw error;
+    }
     if (trx.status === "parking") {
       let error = new Error();
       error.message = "Already Checkin";
