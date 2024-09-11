@@ -142,7 +142,9 @@ export default function Report() {
             </TableRow>
           ))}
         </TableBody>
-        <TableBody emptyContent={"No data to display."}>{[]}</TableBody>
+        {data?.data?.length === 0 && (
+          <TableBody emptyContent={"No data to display."}>{[]}</TableBody>
+        )}
       </Table>
     </div>
   );
