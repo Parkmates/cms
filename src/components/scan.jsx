@@ -8,6 +8,7 @@ const QRScannerComponent = ({ actions }) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingScan, setIsLoadingScan] = useState(false);
+  const [apiCalled, setApiCalled] = useState(false);
 
   const checkInOut = async (qrData) => {
     try {
@@ -17,7 +18,10 @@ const QRScannerComponent = ({ actions }) => {
         method: "PUT",
       });
       const data = await response.json();
-      if (data) setIsSuccess(true);
+      if (data) {
+        setIsSuccess(true);
+        setApiCalled(true);
+      }
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
@@ -30,31 +34,28 @@ const QRScannerComponent = ({ actions }) => {
     const qrScanner = new QrScanner(
       videoRef.current,
       async (result) => {
-        setIsLoadingScan(true);
-        const qrData = result.data; // ambil data hasil scan
-        setScanResult(qrData);
-        if (qrData) await checkInOut(qrData); // panggil fungsi dengan data hasil scan
-        setIsLoadingScan(false);
+        if (!apiCalled) {
+          setIsLoadingScan(true);
+          const qrData = result.data;
+          setScanResult(qrData);
+          if (result) {
+            await checkInOut(qrData);
+            // qrScanner.stop();
+            // onClose();
+          }
+          setIsLoadingScan(false);
+        }
       },
       {
-        highlightScanRegion: true, // aktifin highlight
+        highlightScanRegion: true,
       }
     );
 
     qrScanner.start();
     return () => {
-      qrScanner.destroy();
-      // qrScanner.stop(); // berentiin scanner
+      // qrScanner.stop();
     };
-  }, []);
-
-  const removeHighlight = () => {
-    // hapus elemen highlight kalo ada
-    const highlightElement = document.querySelector(".scan-region-highlight");
-    if (highlightElement) {
-      highlightElement.remove();
-    }
-  };
+  }, [apiCalled]);
 
   return (
     <div className="mb-4 flex flex-col gap-4">

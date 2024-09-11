@@ -201,31 +201,36 @@ class TransactionModels {
   }
 
   static async checkOutTransaction({ id, userId }) {
+    // Cari transaksi berdasarkan id dan userId
     const trx = await database.collection("transactions").findOne({
       _id: new ObjectId(String(id)),
       vendorId: new ObjectId(String(userId)),
     });
 
+    // kalo transaksi ga ditemukan, lempar error
     if (!trx) {
       let error = new Error();
-      error.message = "Your don't have authority";
+      error.message = "You don't have authority";
       throw error;
     }
 
-    const transaction = await database.collection("transactions").updateOne(
-      {
-        _id: new ObjectId(String(id)),
-      },
-      {
-        $set: { status: "checkoutSuccessfull", checkoutAt: new Date() },
-      }
-    );
-
+    // kalo status sudah "checkoutSuccessfull", lempar error untuk menghentikan proses checkout
     if (trx.status === "checkoutSuccessfull") {
       let error = new Error();
       error.message = "Already Checkout";
       throw error;
     }
+
+    // update transaksi ke status "checkoutSuccessfull"
+    const transaction = await database.collection("transactions").updateOne(
+      {
+        _id: new ObjectId(String(id)),
+        status: { $ne: "checkoutSuccessfull" }, // pastiin status belum "checkoutSuccessfull"
+      },
+      {
+        $set: { status: "checkoutSuccessfull", checkoutAt: new Date() },
+      }
+    );
 
     if (!transaction.modifiedCount) {
       let error = new Error();
@@ -234,6 +239,7 @@ class TransactionModels {
       throw error;
     }
 
+    // Update quantity kalo checkout berhasil
     await database.collection("spotDetails").updateOne(
       {
         _id: new ObjectId(String(trx.spotDetailId)),
