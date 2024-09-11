@@ -53,7 +53,7 @@ const QRScannerComponent = ({ actions }) => {
 
     qrScanner.start();
     return () => {
-      // qrScanner.stop();
+      qrScanner.stop();
     };
   }, [apiCalled]);
 
