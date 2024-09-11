@@ -199,15 +199,6 @@ class TransactionModels {
       .collection("transactions")
       .findOne({ _id: new ObjectId(String(id)) });
 
-    await database.collection("spotDetails").updateOne(
-      {
-        _id: new ObjectId(String(trx.spotDetailId)),
-      },
-      {
-        $inc: { quantity: +1 },
-      }
-    );
-
     const transaction = await database.collection("transactions").updateOne(
       {
         _id: new ObjectId(String(id)),
@@ -222,6 +213,16 @@ class TransactionModels {
       error.name = "checkoutFailed";
       throw error;
     }
+
+    await database.collection("spotDetails").updateOne(
+      {
+        _id: new ObjectId(String(trx.spotDetailId)),
+      },
+      {
+        $inc: { quantity: +1 },
+      }
+    );
+
     return "Check-Out Success";
   }
 
