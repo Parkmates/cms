@@ -70,6 +70,8 @@ export default function HomePage() {
   const [user, setUser] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(false);
+  const [isLoadingVendor, setIsLoadingVendor] = useState(false);
+  const [isLoadingUser, setIsLoadingUser] = useState(false);
   const [action, setAction] = useState("");
   const [formData, setFormData] = useState({
     name: "",
@@ -84,32 +86,39 @@ export default function HomePage() {
   });
   const getData = async () => {
     try {
-      // setIsLoadingData(true);
+      setIsLoadingData(true);
       const response = await fetch("/api/parkspot");
       const data = await response.json();
       setData(data);
-      // setIsLoadingData(false);
+      setIsLoadingData(false);
     } catch (error) {
-      // setIsLoadingData(false);
+      setIsLoadingData(false);
       toast.error(error.msg);
     }
   };
   const getVendorList = async () => {
     try {
-      setIsLoadingData(true);
+      setIsLoadingVendor(true);
       const response = await fetch("/api/users?role=vendor");
       const data = await response.json();
       setVendor(data);
-      setIsLoadingData(false);
+      setIsLoadingVendor(false);
     } catch (error) {
-      setIsLoadingData(false);
+      setIsLoadingVendor(false);
       toast.error(error.msg);
     }
   };
   const getUserList = async () => {
-    const response = await fetch("/api/users?role=user");
-    const data = await response.json();
-    setUser(data);
+    try {
+      setIsLoadingUser(true);
+      const response = await fetch("/api/users?role=user");
+      const data = await response.json();
+      setUser(data);
+      setIsLoadingUser(false);
+    } catch (error) {
+      setIsLoadingUser(false);
+      toast.error(error.msg);
+    }
   };
   useEffect(() => {
     console.log("selected", selected);
@@ -337,8 +346,8 @@ export default function HomePage() {
                   <TableColumn>ACTIONS</TableColumn>
                 </TableHeader>
                 <TableBody
-                  loadingContent={<Spinner />}
-                  loadingState={isLoadingData}
+                  isLoading={isLoadingData}
+                  loadingContent={<Spinner color="success" />}
                 >
                   {data.map((item) => (
                     <TableRow key={item._id}>
@@ -475,8 +484,8 @@ export default function HomePage() {
                     {/* <TableColumn>ACTIONS</TableColumn> */}
                   </TableHeader>
                   <TableBody
-                    loadingContent={<Spinner />}
-                    loadingState={isLoadingData}
+                    isLoading={isLoadingVendor}
+                    loadingContent={<Spinner color="success" />}
                   >
                     {vendor.map((item) => (
                       <TableRow key={item._id}>
@@ -542,7 +551,10 @@ export default function HomePage() {
                     <TableColumn>ROLE</TableColumn>
                     {/* <TableColumn>ACTIONS</TableColumn> */}
                   </TableHeader>
-                  <TableBody>
+                  <TableBody
+                    isLoading={isLoadingUser}
+                    loadingContent={<Spinner color="success" />}
+                  >
                     {user.map((item) => (
                       <TableRow key={item._id}>
                         <TableCell>{item.name}</TableCell>
