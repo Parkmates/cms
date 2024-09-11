@@ -33,7 +33,6 @@ import { deleteCookie } from "../actions";
 import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { CldUploadWidget } from "next-cloudinary";
-import QRCodeScanner from "@/components/QRCodeScanner";
 import QRScannerComponent from "@/components/scan";
 import Report from "@/components/Report";
 
@@ -256,10 +255,6 @@ export default function HomePage() {
       ...prev,
       imgUrl: prev.imgUrl.filter((_, i) => i !== index),
     }));
-  };
-  const handleScanSuccess = (decodedText, decodedResult) => {
-    console.log(`Code matched = ${decodedText}`);
-    alert(`Transaction ID: ${decodedText}`);
   };
   return (
     <>
@@ -795,13 +790,17 @@ export default function HomePage() {
         placement="center"
         isOpen={isOpenScanQR}
         onOpenChange={onOpenScanQRChange}
+        size="full"
       >
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Scan QR</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">
+                <p>
+                  Scan QR <span className="capitalize">{scanAction}</span>
+                </p>
+              </ModalHeader>
               <ModalBody>
-                {/* <QRCodeScanner onScanSuccess={handleScanSuccess} /> */}
                 <QRScannerComponent actions={scanAction} />
               </ModalBody>
             </>

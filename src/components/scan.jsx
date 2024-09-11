@@ -80,7 +80,7 @@ const QRScannerComponent = ({ actions }) => {
       )}
       {!isLoading && isSuccess && (
         <p>
-          Status: <span className="text-green-500">Berhasil hit API</span>
+          Status: <span className="text-green-500">Success</span>
         </p>
       )}
     </div>
