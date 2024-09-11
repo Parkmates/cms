@@ -110,7 +110,7 @@ export default function ParkingPage({ params }) {
       parking.type = "";
       await getData();
       setIsLoading(false);
-      await toast.success("Success add parking spot");
+      await toast.success("Success add detail spot");
       onOpenAddParkingChange(false);
     } catch (error) {
       setIsLoading(false);
@@ -138,7 +138,7 @@ export default function ParkingPage({ params }) {
       if (!response.ok) throw await response.json();
       await getData();
       setIsLoading(false);
-      await toast.success("Success update parking spot");
+      await toast.success("Success update detail spot");
       onOpenAddParkingChange(false);
     } catch (error) {
       setIsLoading(false);
@@ -164,7 +164,7 @@ export default function ParkingPage({ params }) {
       });
       if (!response.ok) throw await response.json();
       await getData();
-      toast.success("Success delete parking spot");
+      toast.success("Success delete detail spot");
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);

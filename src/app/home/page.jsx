@@ -216,7 +216,7 @@ export default function HomePage() {
       if (!response.ok) throw await response.json();
       await getData();
       setIsLoading(false);
-      await toast.success("Success add parking spot");
+      await toast.success("Success update parking spot");
       onOpenAddParkingChange(false);
     } catch (error) {
       setIsLoading(false);
