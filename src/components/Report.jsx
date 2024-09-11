@@ -22,17 +22,18 @@ export default function Report() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(false);
   const getData = async () => {
     try {
-      // setIsLoading(true);
+      setIsLoadingData(true);
       const response = await fetch(
         `/api/trx/vendor?limit=${10}&page=${page}&search=${search}`
       );
       const data = await response.json();
       setData(data);
-      // setIsLoading(false);
+      setIsLoadingData(false);
     } catch (error) {
-      // setIsLoading(false);
+      setIsLoadingData(false);
       toast.error(error.msg);
     }
   };
@@ -132,7 +133,10 @@ export default function Report() {
           <TableColumn>PAYMENT FEE</TableColumn>
           <TableColumn>CREATED AT</TableColumn>
         </TableHeader>
-        <TableBody>
+        <TableBody
+          isLoading={isLoadingData}
+          loadingContent={<Spinner color="success" />}
+        >
           {data?.data?.map((item) => (
             <TableRow key={item._id}>
               <TableCell>{item._id}</TableCell>
