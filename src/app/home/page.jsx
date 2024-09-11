@@ -275,7 +275,7 @@ export default function HomePage() {
           selectedKey={selected}
           onSelectionChange={setSelected}
         >
-          <Tab key="parkingList" title="Parking Spot List">
+          <Tab key="parkingList" title="Parking List">
             <div className="flex flex-col gap-4 my-2">
               <div className="flex flex-col gap-4 md:gap-0 md:flex-row justify-between md:items-center my-5">
                 <h1 className="text-xl md:text-3xl">Parking Spot List</h1>
@@ -440,14 +440,14 @@ export default function HomePage() {
               </Table>
             </div>
           </Tab>
-          <Tab key="transactionReport" title="Transaction Report">
+          <Tab key="transactionReport" title="Transactions">
             <Report />
           </Tab>
           {role === "admin" && (
             <Tab
               key="vendorList"
               title="
-          Vendor List"
+          Vendor "
             >
               <div className="flex flex-col gap-4 my-2">
                 <div className="flex justify-between items-center my-5">
@@ -532,7 +532,7 @@ export default function HomePage() {
             <Tab
               key="userList"
               title="
-          User List"
+          User "
             >
               <div className="flex flex-col gap-4 my-2">
                 <div className="flex justify-between items-center my-5">
