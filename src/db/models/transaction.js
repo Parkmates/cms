@@ -365,7 +365,7 @@ class TransactionModels {
         status: "bookingSuccessfull",
       },
       {
-        $set: { status: "cancelled" },
+        $set: { status: "canceled" },
       }
     );
 
