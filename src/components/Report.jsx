@@ -86,6 +86,7 @@ export default function Report() {
         <h1 className="text-xl md:text-3xl">Transaction Report</h1>
         <div className="flex items-center gap-2">
           <Button
+            isDisabled={data?.data?.length === 0}
             isLoading={isLoading}
             onPress={() => exportToExcel()}
             className="bg-green-500 text-white"
