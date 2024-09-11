@@ -201,9 +201,16 @@ class TransactionModels {
   }
 
   static async checkOutTransaction({ id, userId }) {
-    const trx = await database
-      .collection("transactions")
-      .findOne({ _id: new ObjectId(String(id)) });
+    const trx = await database.collection("transactions").findOne({
+      _id: new ObjectId(String(id)),
+      vendorId: new ObjectId(String(userId)),
+    });
+
+    if (!trx) {
+      let error = new Error();
+      error.message = "Your don't have authority";
+      throw error;
+    }
 
     const transaction = await database.collection("transactions").updateOne(
       {
@@ -213,6 +220,13 @@ class TransactionModels {
         $set: { status: "checkoutSuccessfull", checkoutAt: new Date() },
       }
     );
+
+    if (trx.status === "checkoutSuccessfull") {
+      let error = new Error();
+      error.message = "Already Checkout";
+      throw error;
+    }
+
     if (!transaction.modifiedCount) {
       let error = new Error();
       error.message = "Checkout Failed";
