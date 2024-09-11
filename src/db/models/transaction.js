@@ -188,7 +188,7 @@ class TransactionModels {
     if (!transaction.modifiedCount) {
       let error = new Error();
       error.message = "Checkin Failed";
-      error.name = "checkinFailed"
+      error.name = "checkinFailed";
       throw error;
     }
     return "Check-In Success";
@@ -410,12 +410,12 @@ class TransactionModels {
   }
 
   static async getHistoryForVendor({ role, userId, limit, page, search }) {
-    // Set pageSize ke nilai yang sangat besar jika limit tidak diisi
     const pageSize = limit ? parseInt(limit, 10) : Infinity;
     page = Math.max(1, +page);
 
     const matchStage = {
       vendorId: new ObjectId(String(userId)),
+      status: { $in: ["checkoutSuccessfull", "failed", "canceled"] },
     };
 
     if (search) {
@@ -463,13 +463,11 @@ class TransactionModels {
       .collection("transactions")
       .countDocuments(matchStage);
 
-    // Jika pageSize adalah Infinity, jangan hitung totalPages
     const totalPages =
       pageSize === Infinity ? null : Math.ceil(totalCount / pageSize);
 
     const resultQuery = database.collection("transactions").aggregate(agg);
 
-    // Hanya terapkan limit dan skip jika pageSize tidak Infinity
     const result =
       pageSize === Infinity
         ? await resultQuery.toArray()
